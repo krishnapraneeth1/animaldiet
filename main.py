@@ -83,13 +83,109 @@ class PetDieterSystem:
         self.app.geometry("1024x650")
         #display image
         #clearing the window
-        self.frame=Frame(self.app,width=250,height=210,bg="red")
-        self.frame.place(x=100,y=100)
+        self.frame=Frame(self.app,width=1050,height=650,bg="white")
+        self.frame.place(x=0,y=0)
         
         self.heading=tk.Label(self.frame,text="Create Account",font=("Times",20,"bold"),bg="white",fg="black")
-        self.heading.place(x=90,y=90)
-
-    
+        self.heading.place(x=425,y=20)
+        #inserintg signup image
+        img = Image.open("signup.jpg")
+        img = img.resize((300, 300))
+        img=ImageTk.PhotoImage(img)
+        self.label=Label(self.frame,image=img)
+        self.label.image=img
+        self.label.place(x=780,y=380)
+        
+        #for User inforamtion label
+        self.user_info=Label(self.frame,text="User Information",font=("Times",12,"bold"),bg="white",fg="black")
+        self.user_info.place(x=50,y=80)
+        
+        #for first name label and entry
+        self.username=Label(self.frame,text="First Name",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=120)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=120)
+        
+        #for last name label and entry
+        self.username=Label(self.frame,text="Last Name",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=340,y=120)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=420,y=120)
+        
+        #for email label and entry
+        self.username=Label(self.frame,text="Email",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=160)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=160)
+        
+        #for phone number label and entry
+        self.username=Label(self.frame,text="Mobile No.",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=200)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=200)
+        
+        #for password label and entry  
+        self.username=Label(self.frame,text="Password",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=240)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=240)
+        
+        #for confirm password label and entry 
+        self.username=Label(self.frame,text="Confirm Password",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=340,y=240)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=450,y=240)
+        
+        #for pet details label
+        self.pet_details=Label(self.frame,text="Pet Details",font=("Times",12,"bold"),bg="white",fg="black")
+        self.pet_details.place(x=50,y=300)
+        
+        #for pet name label and entry
+        self.username=Label(self.frame,text="Pet Name",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=340)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=340)
+        
+        #for pet age label and entry
+        self.username=Label(self.frame,text="Pet Age",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=380)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=380)
+        
+        #for pet weight label and entry
+        self.username=Label(self.frame,text="Pet Weight",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=420)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=420)
+        
+        #for pet breed label and entry
+        self.username=Label(self.frame,text="Pet Breed",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=460)
+        self.username=Entry(self.frame,width=25,fg="black",bg="white",font='Times 12')
+        self.username.place(x=120,y=460)
+        
+        #for pet type label and entry
+        self.username=Label(self.frame,text="Pet Type",font=("Times",10,"bold"),bg="white",fg="black")
+        self.username.place(x=50,y=507)
+        #creating a drop down menu for pet type
+        pet_type = ['Dog','Cat',"Bird","Fish"]
+        self.seleted_pet_type = tk.StringVar()
+        self.seleted_pet_type.set(pet_type[0])
+        self.drop = tk.OptionMenu(self.frame, self.seleted_pet_type, *pet_type) #*pet_type unpacking the iterables(it allows you to pass the individual elements of an in a list)
+        self.drop.place(x=120,y=500)
+        
+        # singup button
+        self.signup=Button(self.frame,text="Sign Up",font=("Times",12,"bold"),bg="white",fg="black")
+        self.signup.place(x=450,y=550)
+        
+        #for already a member text
+        self.login_page=Label(self.frame,text="Already a Member?",font=("Times",10,"bold"),bg="white",fg="black")
+        self.login_page.place(x=50,y=600)
+        
+        #for login button
+        self.login_page=Button(self.frame,text="Login",font=("Times",10,"bold"),bg="white",fg="black",command=self.login_page)
+        self.login_page.place(x=170,y=595)
+        
 #starter code
 #creating an object of the class
 if __name__ == "__main__":
@@ -97,4 +193,4 @@ if __name__ == "__main__":
     project=PetDieterSystem(app)
     app.mainloop()
 
-#checking git push
+

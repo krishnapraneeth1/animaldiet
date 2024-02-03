@@ -5,10 +5,8 @@ from tkinter import messagebox
 import mysql.connector
 from mysql.connector import Error
 from PIL import Image, ImageTk
-import os
-import sys
 import re
-import datetime
+
 
 #connecting to the database
 pdsdb = mysql.connector.connect(
@@ -56,7 +54,7 @@ class PDS:
         self.label.place(x=0,y=0)
         
         
-        self.app.after(1000,self.login_page)
+        self.app.after(0,self.login_page)
 
 
         
@@ -100,7 +98,7 @@ class PDS:
             if self.new_password.get() == "":
                self.new_password.insert(0, "Password")
                self.new_password.config(show="")
-               
+
         self.new_password =Entry(self.l_frame,width=25,fg="black",bg="white",font=("Helvetica", 12))
         self.new_password.place(x=50,y=107,height=28)
         self.new_password.insert(0,"Password")
@@ -111,7 +109,7 @@ class PDS:
         
         
         #for forget password
-        self.forget_password=Button(self.l_frame,text="Forget Password?",font=("Helvetica",12,"bold"),bg="white",fg="black")
+        self.forget_password=Button(self.l_frame,text="Forget Password?",font=("Helvetica",12,"bold"),bg="white",fg="black",command=self.f_password)
         self.forget_password.place(x=100,y=150)
         
         #buttons
@@ -181,8 +179,79 @@ class PDS:
         else:
             messagebox.showerror("Error", "All fields are required")
             
+#forget password
 
-    
+    def f_password(self):
+        for i in self.app.winfo_children():
+            i.destroy()
+       
+        self.app.title("Forget Password")
+        self.app.geometry("1024x650")
+        #display image 
+        img = Image.open("mainblur.jpg")
+        img=ImageTk.PhotoImage(img)
+        self.label=Label(self.app,image=img)
+        self.label.image=img
+        self.label.place(x=0,y=0)
+        
+        self.up_frame=Frame(self.app,width=350,height=360,bg="white")
+        self.up_frame.place(x=367,y=180)
+        self.heading=Label(self.up_frame,text="Forget Password",font=("Helvetica",15,"bold"),bg="white",fg="black")
+        self.heading.place(x=100,y=10)
+        
+        self.email_label=Label(self.up_frame,text="Email/Username",font=("Helvetica",10,"bold"),bg="white",fg="black")
+        self.email_label.place(x=130,y=80)  
+        
+        self.email_entry=Entry(self.up_frame,width=25,fg="black",bg="white",font='Helvetica 12')
+        self.email_entry.place(x=70,y=110)
+        
+        self.newpassword_label=Label(self.up_frame,text="New Password",font=("Helvetica",10,"bold"),bg="white",fg="black")
+        self.newpassword_label.place(x=130,y=140)
+        
+        self.newpassword_entry=Entry(self.up_frame,width=25,fg="black",bg="white",font='Helvetica 12')
+        self.newpassword_entry.place(x=70,y=170)
+        
+        self.confirm_newpassword_label=Label(self.up_frame,text="Confirm New Password",font=("Helvetica",10,"bold"),bg="white",fg="black")
+        self.confirm_newpassword_label.place(x=110,y=200)   
+        
+        self.confirm_newpassword_entry=Entry(self.up_frame,width=25,fg="black",bg="white",font='Helvetica 12')
+        self.confirm_newpassword_entry.place(x=70,y=230)
+       
+        #update password button
+        self.update=Button(self.up_frame,text="Update",font=("Helvetica",10,"bold"),bg="white",fg="black",command=self.updatenew_password)
+        self.update.place(x=160,y=270)
+       
+
+# Assuming that pdsdb is your database connection object
+
+        
+    def updatenew_password(self):
+        email = self.email_entry.get()
+        cursor = pdsdb.cursor()
+        try:
+            cursor.execute("SELECT * from user_info WHERE email=%s", (email,))
+            user = cursor.fetchone()
+        except Error as e:
+            messagebox.showerror("Error", e)
+        if user:
+            new_password = self.newpassword_entry.get()
+            confirm_new_password = self.confirm_newpassword_entry.get()
+            if email and new_password and confirm_new_password:
+                if new_password == confirm_new_password:
+                    try:
+                        cursor = pdsdb.cursor()
+                        cursor.execute("UPDATE user_info SET password=%s WHERE email=%s", (new_password, email))
+                        pdsdb.commit()
+                        messagebox.showinfo("Success", "Password updated successfully")
+                        self.login_page()
+                    except Error as e:
+                        messagebox.showerror("Error", e)
+                else:
+                    messagebox.showerror("Error", "Password and Confirm Password do not match")
+            else:
+                messagebox.showerror("Error", "All fields are required")
+        else:
+            messagebox.showerror("Error", "Invalid Email")
     #sign up page or creat account page
     def sign_up(self):
         self.app.title("Sign Up Page")
@@ -246,6 +315,7 @@ class PDS:
         self.s_c_password.place(x=334,y=240)
         self.s_c_password=Entry(self.frame1,width=25,fg="black",bg="white",font='Helvetica 12')
         self.s_c_password.place(x=460,y=240)
+       
         
         '''#for pet details label
         self.pet_details=Label(self.frame,text="Pet Details",font=("Helvetica",12,"bold"),bg="white",fg="black")
@@ -304,4 +374,5 @@ class PDS:
 if __name__ == "__main__":
     root = Tk()
     app = PDS(root)
+    #app.new_password()
     root.mainloop()

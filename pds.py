@@ -54,7 +54,7 @@ class PDS:
         self.label.place(x=0,y=0)
         
         
-        self.app.after(0,self.login_page)
+        self.app.after(2000,self.login_page)
 
 
         
@@ -171,7 +171,7 @@ class PDS:
                 cursor.execute("SELECT * FROM user_info WHERE email=%s AND password=%s", (username, password))
                 user = cursor.fetchone()
                 if user:
-                    messagebox.showinfo("Success", "Login Successful")
+                    messagebox.showinfo("Success", "Welcome "+username)
                 else:
                     messagebox.showerror("Error", "Invalid Username/Email or Password")
             except Error as e:
@@ -220,6 +220,10 @@ class PDS:
         #update password button
         self.update=Button(self.up_frame,text="Update",font=("Helvetica",10,"bold"),bg="white",fg="black",command=self.updatenew_password)
         self.update.place(x=160,y=270)
+        
+        #back to login page
+        self.backtologin_page=Button(self.up_frame,text="Back to Login",font=("Helvetica",10,"bold"),bg="white",fg="black",command=self.login_page)
+        self.backtologin_page.place(x=140,y=310)
        
 
 # Assuming that pdsdb is your database connection object

@@ -56,7 +56,7 @@ class PDS:
         self.label.place(x=0,y=0)
         
         
-        self.app.after(0,self.login_page)
+        self.app.after(2000,self.login_page)
 
 
         
@@ -175,6 +175,9 @@ class PDS:
                 cursor.execute("SELECT * FROM user_info WHERE email=%s AND password=%s", (username, password))
                 user = cursor.fetchone()
                 if user:
+                    # store user deatils in a global variable
+                    self.user = user
+                    
                     self.breed_selection()
                     
                 else:
@@ -236,6 +239,7 @@ class PDS:
             # Create a popup menu
             popup_menu = tk.Menu(self.frame1, tearoff=0)
             popup_menu.add_command(label="User Profile", command=self.user_profile)
+            popup_menu.add_command(label="My Pets", command=self.my_pets_profile)
             popup_menu.add_command(label="Sign Out", command=self.sign_out)
 
             # Display the menu at the current mouse position
@@ -317,6 +321,33 @@ class PDS:
         self.umobile = Label(self.uframe, text="Mobile:", font=("Helvetica", 12, "bold"), bg="white", fg="black")
         self.umobile.place(x=50, y=250)
         
+        #fill the user details
+        self.ufirstname = Label(self.uframe, text=self.user[1], font=("Helvetica", 12, "bold"), bg="white", fg="black")
+        self.ufirstname.place(x=200, y=100)
+        
+        self.ulastname = Label(self.uframe, text=self.user[2], font=("Helvetica", 12, "bold"), bg="white", fg="black")
+        self.ulastname.place(x=200, y=150)
+        
+        self.uemail = Label(self.uframe, text=self.user[3], font=("Helvetica", 12, "bold"), bg="white", fg="black")
+        self.uemail.place(x=200, y=200)
+        
+        self.umobile = Label(self.uframe, text=self.user[4], font=("Helvetica", 12, "bold"), bg="white", fg="black")
+        self.umobile.place(x=200, y=250)
+        
+        
+    def my_pets_profile(self):
+        for i in self.app.winfo_children():
+            i.destroy()
+            
+        self.app.title("My Pets")
+        self.app.geometry("1024x650")
+        
+        self.uframe = Frame(self.app, width=1024, height=650, bg="white")
+        self.uframe.place(x=0, y=0)
+        
+        self.heading = Label(self.uframe, text="My Pets", font=("Helvetica", 20, "bold"), bg="white", fg="black")
+        self.heading.place(x=400, y=10)
+        
         self.upet_name = Label(self.uframe, text="Pet Name:", font=("Helvetica", 12, "bold"), bg="white", fg="black")
         self.upet_name.place(x=50, y=300)
         
@@ -325,6 +356,7 @@ class PDS:
         
         self.upet_color = Label(self.uframe, text="Pet Color:", font=("Helvetica", 12, "bold"), bg="white", fg="black")
         self.upet_color.place(x=50, y=400)
+
         
         #creating a back button to go back to the previous page
         self.back_to_breedselection = Button(self.uframe, text="Back", font=("Helvetica", 12, "bold"), bg="white", fg="black", command=self.breed_selection)

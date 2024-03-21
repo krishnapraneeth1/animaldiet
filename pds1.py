@@ -5,7 +5,7 @@ from tkinter import messagebox
 import mysql.connector
 from mysql.connector import Error
 from PIL import Image, ImageTk
-# import re
+import re
 import tkinter as tk
 # from GIF import GIF
 # from RAG import RAG
@@ -22,10 +22,9 @@ pdsdb = mysql.connector.connect(
 #creating table user query userid,first_name,last_name,email,mobile,password
 create_user_table = """
 CREATE TABLE IF NOT EXISTS user_info (  
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) PRIMARY KEY NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
     mobile VARCHAR(100) NOT NULL,
     password VARCHAR(100) NOT NULL,
     pet_name VARCHAR(100),
@@ -71,26 +70,27 @@ class PawfectPortions:
         self.welcome_label = Label(self.login_frame, text="Welcome.", font=("calibri", 70, "bold"), bg="black", fg="WHITE")
         self.welcome_label.place(x=100, y=70)
         
+        
         #adding login text on the top
         self.login_label = Label(self.login_frame, text="Login", font=("calibri", 20, "bold"), bg="black", fg="WHITE")
         self.login_label.place(x=850, y=200)
         
         #adding username label
-        self.username_label = Label(self.login_frame, text="_____________________", font=("calibri", 18, "bold"), bg="black", fg="WHITE") 
+        self.username_label = Label(self.login_frame, text="__________________________", font=("calibri", 18, "bold"), bg="black", fg="WHITE") 
         self.username_label.place(x=760, y=270)
         #adding password label
-        self.password_label = Label(self.login_frame, text="_____________________", font=("calibri", 18, "bold"), bg="black", fg="WHITE")
+        self.password_label = Label(self.login_frame, text="__________________________", font=("calibri", 18, "bold"), bg="black", fg="WHITE")
         self.password_label.place(x=760, y=340)
         
         #adding password entryc
-        self.password_entry = Entry(self.login_frame,font=("calibri", 18), bg="black", bd=0,fg="white", relief="ridge",insertbackground="white")
+        self.password_entry = Entry(self.login_frame,font=("calibri", 18), bg="black", width=28, bd=0,fg="white", relief="ridge",insertbackground="white")
         self.password_entry.place(x=765, y=325)
         self.password_entry.insert(0, "Password")
         self.password_entry.bind('<FocusIn>', self.removepasswordtext)
         self.password_entry.bind('<FocusOut>', self.removepasswordtext)
     
         #adding username entry
-        self.username_entry = Entry(self.login_frame,font=("calibri", 18), bg="black", bd=0,fg="white", relief="ridge",insertbackground="white")
+        self.username_entry = Entry(self.login_frame,font=("calibri", 18), bg="black", width= 28, bd=0,fg="white", relief="ridge",insertbackground="white")
         self.username_entry.place(x=765, y=260)
         self.username_entry.insert(0, "Email")
         #self.username_entry.bind("<Key>", self.removeusernametext)
@@ -98,14 +98,14 @@ class PawfectPortions:
         self.username_entry.bind('<FocusOut>', self.removeusernametext)
         
         #adding login button
-        self.login_button = Button(self.login_frame, text="Login", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black", command=self.welcomeScreen)
-        self.login_button.place(x=850, y=400)
+        self.login_button = Button(self.login_frame, text="Login", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black", command=self.login_validation)
+        self.login_button.place(x=870, y=400)
         #adding signup button
         self.signup_button = Button(self.login_frame, text="Sign Up", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black",command=self.signupScreen)
-        self.signup_button.place(x=838, y=440)
+        self.signup_button.place(x=858, y=440)
         #adding forgot password button
         self.forgot_password_button = Button(self.login_frame, text="Forgot Password?", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black")
-        self.forgot_password_button.place(x=783, y=480)
+        self.forgot_password_button.place(x=803, y=480)
     
     
     #creating entry lable inside the username entry
@@ -186,7 +186,7 @@ class PawfectPortions:
         self.password_label = Label(self.signup_frame, text="_______________________", font=("calibri", 18, "bold"), bg="#080808", fg="WHITE")
         self.password_label.place(x=160, y=425)
         #adding password entry
-        self.password_entry = Entry(self.signup_frame,font=("calibri", 15), width= 28, bg="#080808", bd=0,fg="white", relief="ridge",insertbackground="white")
+        self.password_entry = Entry(self.signup_frame,font=("calibri", 15), width= 28, bg="#080808", bd=0,fg="white", relief="ridge",insertbackground="white",show="*")
         self.password_entry.place(x=160, y=425)
         #adding confirm password label
         self.confirm_password_label = Label(self.signup_frame, text="Confirm Password", font=("calibri", 18, "bold"), bg="#080808", fg="WHITE")
@@ -195,24 +195,22 @@ class PawfectPortions:
         self.confirm_password_label = Label(self.signup_frame, text="_______________________", font=("calibri", 18, "bold"), bg="#080808", fg="WHITE")
         self.confirm_password_label.place(x=250, y=495)
         #adding confirm password entry
-        self.confirm_password_entry = Entry(self.signup_frame,font=("calibri", 15), width=28, bg="#080808", bd=0,fg="white", relief="ridge",insertbackground="white")
+        self.confirm_password_entry = Entry(self.signup_frame,font=("calibri", 15), width=28, bg="#080808", bd=0,fg="white", relief="ridge",insertbackground="white",show="*")
         self.confirm_password_entry.place(x=252, y=495)
         #adding signup button
         self.signup_button = Button(self.signup_frame, text="Sign Up", font=("calibri",18,"bold"), bg="#080808", fg="white", bd=0, cursor="hand2",activebackground="#080808")
         self.signup_button.place(x=485, y=590)
+        self.signup_button.config(command=self.signup_data)
         #adding login button
         self.login_button = Button(self.signup_frame, text="Back to Login", font=("calibri",18,"bold"), bg="#080808", fg="white", bd=0, cursor="hand2",activebackground="#080808",command=self.loginScreen)
         self.login_button.place(x=460, y=650)
         
 
     def welcomeScreen(self):
-        
-        
         #clear the window
         for i in self.root.winfo_children():
             i.destroy()
-            
-                
+                       
         #dsiplay welcome image
         self.bg = Image.open("images/welcome.jpg")
         self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
@@ -227,25 +225,29 @@ class PawfectPortions:
         self.title_image = Label(self.root, image=self.title, bg="white")
         self.title_image.config(highlightthickness=0, bd=0, relief="ridge")
         self.title_image.place(x=20, y=140)
-    
-        # #frame for gif
-        # self.gif_frame = Frame(self.root, bg="white")
-        # self.gif_frame.place(x=300, y=300, width=500, height=450)
-
-        # #gif
-        # self.gif = GIF(self.gif_frame, 'gifs\dog_cat.gif')
-        # self.gif.config(highlightthickness=0, bd=0, relief="ridge")
-        # self.gif.pack()
-
-        # #remove frame border
-        # self.gif_frame.config(highlightbackground="white", highlightcolor="white", highlightthickness=0)
-
+        
 
         #bottom frame for buttons
         self.bottom_frame = Frame(self.root, bg="#242323")
         self.bottom_frame.place(x=0, y=690, width=1200, height=80)
         #add shadow to the bottom frame
         self.bottom_frame.config(highlightbackground="black", highlightcolor="black", highlightthickness=0)
+        
+        #add logo image as a button side to home button
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.bottom_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.bottom_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
         
         #home button    
         self.home_button = Button(self.bottom_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
@@ -323,6 +325,22 @@ class PawfectPortions:
         
         #highlight the pet ai button
         self.pet_ai_button.config(bg="white", fg="#242323")
+        
+        #add logo image as a button
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
         
         #facebook icon as a button
         self.facebook_icon = Image.open("social/facebook.png")
@@ -424,6 +442,8 @@ class PawfectPortions:
         self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
         
         
+        
+        
         #buttons frame on top
         self.buttons_frame = Frame(self.root, bg="#242323")
         self.buttons_frame.place(x=0, y=0, width=1200, height=60)
@@ -473,6 +493,22 @@ class PawfectPortions:
         
         self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
         self.twitter_button.place(x=1100, y=15)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
         
         #select dog breed label bg #272727
         self.select_dog_breed_label = Label(self.root, text="Select Dog Breed", font=("calibri", 30, ), bg="#272727", fg="white")
@@ -508,72 +544,141 @@ class PawfectPortions:
         # self.siberian_husky_button.config(command=self.dogScreen("Siberian Husky"))
         
     #dog screen
-    def dogScreen(self, breed):
-        #clear the window
-        for i in self.root.winfo_children():
-            i.destroy()
+    # def dogScreen(self, breed):
+    #     #clear the window
+    #     for i in self.root.winfo_children():
+    #         i.destroy()
             
-        #display dog breed image full screen
-        self.bg = Image.open(f"images/{breed}.jpg")
-        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
-        self.bg = ImageTk.PhotoImage(self.bg)
-        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+    #     #display dog breed image full screen
+    #     self.bg = Image.open(f"images/{breed}.jpg")
+    #     self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+    #     self.bg = ImageTk.PhotoImage(self.bg)
+    #     self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
         
         
-        #buttons frame on top
-        self.buttons_frame = Frame(self.root, bg="#242323")
-        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
         
-        #home button
-        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-        self.home_button.config(command=self.welcomeScreen)
-        self.home_button.place(x=400, y=6)
         
-        #dogs button
-        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-        self.dogs_button.config(command=self.selectDogBreed)
-        self.dogs_button.place(x=520, y=6)
         
-        #dogs button white
-        self.dogs_button.config(bg="white", fg="#242323")
         
-        #cats button
-        self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-        self.cats_button.place(x=640, y=6)
+    #     #buttons frame on top
+    #     self.buttons_frame = Frame(self.root, bg="#242323")
+    #     self.buttons_frame.place(x=0, y=0, width=1200, height=60)
         
-        #Pet AI
-        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-        self.pet_ai_button.config(command=self.petAiScreen)
-        self.pet_ai_button.place(x=760, y=6)
         
-        #facebook icon as a button
-        self.facebook_icon = Image.open("social/facebook.png")
-        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
-        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+    #     #home button
+    #     self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+    #     self.home_button.config(command=self.welcomeScreen)
+    #     self.home_button.place(x=400, y=6)
         
-        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
-        self.facebook_button.place(x=1000, y=13)
+    #     #dogs button
+    #     self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+    #     self.dogs_button.config(command=self.selectDogBreed)
+    #     self.dogs_button.place(x=520, y=6)
         
-        #instagram icon as a button
-        self.instagram_icon = Image.open("social/insta.png")
-        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
-        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+    #     #dogs button white
+    #     self.dogs_button.config(bg="white", fg="#242323")
         
-        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
-        self.instagram_button.place(x=1050, y=15)
+    #     #cats button
+    #     self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+    #     self.cats_button.place(x=640, y=6)
         
-        #twitter icon as a button
-        self.twitter_icon = Image.open("social/twitter.png")
-        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
-        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+    #     #Pet AI
+    #     self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+    #     self.pet_ai_button.config(command=self.petAiScreen)
+    #     self.pet_ai_button.place(x=760, y=6)
+        
+    #     #facebook icon as a button
+    #     self.facebook_icon = Image.open("social/facebook.png")
+    #     self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+    #     self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+    #     self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+    #     self.facebook_button.place(x=1000, y=13)
+        
+    #     #instagram icon as a button
+    #     self.instagram_icon = Image.open("social/insta.png")
+    #     self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+    #     self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+    #     self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+    #     self.instagram_button.place(x=1050, y=15)
+        
+    #     #twitter icon as a button
+    #     self.twitter_icon = Image.open("social/twitter.png")
+    #     self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+    #     self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
 
-        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
-        self.twitter_button.place(x=1100, y=15)
+    #     self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+    #     self.twitter_button.place(x=1100, y=15)
         
-        #display breed name label
-        self.breed_label = Label(self.root, text=breed, font=("calibri", 30, "bold"), bg="#272727", fg="white")
-        self.breed_label.place(x=500, y=120)
         
+        
+    #     #display breed name label
+    #     self.breed_label = Label(self.root, text=breed, font=("calibri", 30, "bold"), bg="#272727", fg="white")
+    #     self.breed_label.place(x=500, y=120)
+        
+    # adding signup page entry boxes data to the database
+    def signup_data(self):
+    #get the data from the entry boxes
+        first_name = self.first_name_entry.get()
+        last_name = self.last_name_entry.get()
+        email = self.email_entry.get()
+        mobile = self.mobile_entry.get()
+        password = self.password_entry.get()
+        confirm_password = self.confirm_password_entry.get()
+        
+         #check if the data is empty
+        if first_name == "" or last_name == "" or email == "" or mobile == "" or password == "" or confirm_password == "":
+            messagebox.showerror("Error", "All fields are required")
+            return
+        #email validation
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            messagebox.showerror("Error", "Invalid Email")
+            return
+        #mobile validation
+        if not re.fullmatch(r"^[0-9]{10}$", mobile):
+            messagebox.showerror("Error", "Invalid Mobile Number")
+            return
+        #password validation
+        if len(password) < 8 or not re.search("[a-z]", password) or not re.search("[A-Z]", password) or not re.search("[0-9]", password):
+            messagebox.showerror("Error", "Password must contain at least 8 characters, including letters and numbers")
+            return
+        #check if the password and confirm password are the same
+        if password != confirm_password:
+            messagebox.showerror("Error", "Password and Confirm Password should be the same")
+            return
+        # inserting the data to the database
+        cursor = pdsdb.cursor()
+        insert_data = f"INSERT INTO user_info (email,first_name,last_name, mobile, password) VALUES ('{email}', '{first_name}', '{last_name}',  '{mobile}', '{password}')"
+        cursor.execute(insert_data)
+        pdsdb.commit()
+        messagebox.showinfo("Success", "You have successfully registered")
+        self.loginScreen()
+        
+    #login page validation with the database
+    def login_validation(self):
+        #get the data from the entry boxes
+        email = self.username_entry.get()
+        password = self.password_entry.get()
+        
+        # print("Email:", email)s
+        
+        # print("Password:", password)
+        
+        # if email == "" or password == "":
+        #     messagebox.showerror("Error", "All fields are required")
+        
+        # checking the email and password with the database
+        cursor = pdsdb.cursor()
+        select_data = f"SELECT * FROM user_info WHERE email = '{email}' AND password = '{password}'"
+        cursor.execute(select_data)
+        user = cursor.fetchone()
+
+        if user:
+            self.welcomeScreen()
+        else:
+            messagebox.showerror("Error", "Invalid Email or Password")
+            return
         
         
         

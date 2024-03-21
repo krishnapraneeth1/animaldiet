@@ -61,6 +61,9 @@ class PawfectPortions:
         #create a frame for the login screen
         self.login_frame = Frame(self.root, bg="white")
         self.login_frame.place(x=0, y=0, width=1200, height=750)
+        
+        self.show_pass_var = tk.IntVar()
+        self.password_visible = False
         # adding Logindogpage1 image
         self.bg = Image.open("images/Logindogpage1.jpg")
         self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
@@ -97,16 +100,42 @@ class PawfectPortions:
         self.username_entry.bind('<FocusIn>', self.removeusernametext)
         self.username_entry.bind('<FocusOut>', self.removeusernametext)
         
+        show_icon_image = Image.open("images/show.png")
+        show_icon_resized = show_icon_image.resize((30, 30), Image.Resampling.LANCZOS)  # Use Resampling.LANCZOS for Pillow >= 7.0.0
+        self.show_icon = ImageTk.PhotoImage(show_icon_resized)
+
+        # Open and resize the hide icon
+        hide_icon_image = Image.open("images/hide.png")
+        hide_icon_resized = hide_icon_image.resize((30, 30), Image.Resampling.LANCZOS)  # Use Resampling.LANCZOS for Pillow >= 7.0.0
+        self.hide_icon = ImageTk.PhotoImage(hide_icon_resized)
+
+
+        # Create a button to toggle password visibility
+        self.toggle_button = tk.Button(self.login_frame, image=self.show_icon, command=self.toggle_password_visibility, borderwidth=0,highlightthickness=0, bg="black", activebackground="black")
+        self.toggle_button.place(x=1050, y=330)
+        
+        
         #adding login button
-        self.login_button = Button(self.login_frame, text="Login", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black", command=self.login_validation)
-        self.login_button.place(x=870, y=400)
+        self.login_button = Button(self.login_frame, text="Login", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black",activeforeground="grey", command=self.login_validation)
+        self.login_button.place(x=800, y=400)
         #adding signup button
-        self.signup_button = Button(self.login_frame, text="Sign Up", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black",command=self.signupScreen)
-        self.signup_button.place(x=858, y=440)
+        self.signup_button = Button(self.login_frame, text="Sign Up", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black",activeforeground="grey",command=self.signupScreen)
+        self.signup_button.place(x=950, y=400)
         #adding forgot password button
-        self.forgot_password_button = Button(self.login_frame, text="Forgot Password?", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black")
-        self.forgot_password_button.place(x=803, y=480)
-    
+        self.forgot_password_button = Button(self.login_frame, text="Forgot Password?", font=("calibri",10,"bold"), bg="black", fg="light blue", bd=0, cursor="hand2",activebackground="black")
+        self.forgot_password_button.place(x=960, y=380)
+
+    def toggle_password_visibility(self):
+        if self.password_visible:
+            # Hide the password and update the button icon
+            self.password_entry.config(show="*")
+            self.toggle_button.config(image=self.show_icon)
+            self.password_visible = False
+        else:
+            # Show the password and update the button icon
+            self.password_entry.config(show="")
+            self.toggle_button.config(image=self.hide_icon)
+            self.password_visible = True
     
     #creating entry lable inside the username entry
     def removeusernametext(self, event):
@@ -188,6 +217,11 @@ class PawfectPortions:
         #adding password entry
         self.password_entry = Entry(self.signup_frame,font=("calibri", 15), width= 28, bg="#080808", bd=0,fg="white", relief="ridge",insertbackground="white",show="*")
         self.password_entry.place(x=160, y=425)
+        
+         # Create a button to toggle password visibility
+        self.toggle_button = tk.Button(self.signup_frame, image=self.show_icon, command=self.toggle_password_visibility, borderwidth=0,highlightthickness=0, bg="#080808", activebackground="black")
+        self.toggle_button.place(x=425, y=420)
+        
         #adding confirm password label
         self.confirm_password_label = Label(self.signup_frame, text="Confirm Password", font=("calibri", 18, "bold"), bg="#080808", fg="WHITE")
         self.confirm_password_label.place(x=50, y=500)
@@ -198,11 +232,11 @@ class PawfectPortions:
         self.confirm_password_entry = Entry(self.signup_frame,font=("calibri", 15), width=28, bg="#080808", bd=0,fg="white", relief="ridge",insertbackground="white",show="*")
         self.confirm_password_entry.place(x=252, y=495)
         #adding signup button
-        self.signup_button = Button(self.signup_frame, text="Sign Up", font=("calibri",18,"bold"), bg="#080808", fg="white", bd=0, cursor="hand2",activebackground="#080808")
+        self.signup_button = Button(self.signup_frame, text="Sign Up", font=("calibri",18,"bold"), bg="#080808", fg="white", bd=0, cursor="hand2",activebackground="#080808",activeforeground="grey")
         self.signup_button.place(x=485, y=590)
         self.signup_button.config(command=self.signup_data)
         #adding login button
-        self.login_button = Button(self.signup_frame, text="Back to Login", font=("calibri",18,"bold"), bg="#080808", fg="white", bd=0, cursor="hand2",activebackground="#080808",command=self.loginScreen)
+        self.login_button = Button(self.signup_frame, text="Back to Login", font=("calibri",18,"bold"), bg="#080808", fg="white", bd=0, cursor="hand2",activebackground="#080808",activeforeground="grey",command=self.loginScreen)
         self.login_button.place(x=460, y=650)
         
 

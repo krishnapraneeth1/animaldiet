@@ -1,3 +1,4 @@
+import tkinter
 #import python ,tkinter, mysql and other libraries
 from tkinter import *
 from tkinter import ttk
@@ -7,7 +8,8 @@ from mysql.connector import Error
 from PIL import Image, ImageTk
 import re
 import tkinter as tk
-# from GIF import GIF
+from tkinter import ttk
+import webbrowser
 # from RAG import RAG
 
 
@@ -85,7 +87,7 @@ class PawfectPortions:
         self.password_label = Label(self.login_frame, text="__________________________", font=("calibri", 18, "bold"), bg="black", fg="WHITE")
         self.password_label.place(x=760, y=340)
         
-        #adding password entryc
+        #adding password entry
         self.password_entry = Entry(self.login_frame,font=("calibri", 18), bg="black", width=28, bd=0,fg="white", relief="ridge",insertbackground="white")
         self.password_entry.place(x=765, y=325)
         self.password_entry.insert(0, "Password")
@@ -100,13 +102,14 @@ class PawfectPortions:
         self.username_entry.bind('<FocusIn>', self.removeusernametext)
         self.username_entry.bind('<FocusOut>', self.removeusernametext)
         
+        #adding show password icon
         show_icon_image = Image.open("images/show.png")
-        show_icon_resized = show_icon_image.resize((30, 30), Image.Resampling.LANCZOS)  # Use Resampling.LANCZOS for Pillow >= 7.0.0
+        show_icon_resized = show_icon_image.resize((30, 30), Image.Resampling.LANCZOS)  
         self.show_icon = ImageTk.PhotoImage(show_icon_resized)
 
         # Open and resize the hide icon
         hide_icon_image = Image.open("images/hide.png")
-        hide_icon_resized = hide_icon_image.resize((30, 30), Image.Resampling.LANCZOS)  # Use Resampling.LANCZOS for Pillow >= 7.0.0
+        hide_icon_resized = hide_icon_image.resize((30, 30), Image.Resampling.LANCZOS)  
         self.hide_icon = ImageTk.PhotoImage(hide_icon_resized)
 
 
@@ -122,9 +125,10 @@ class PawfectPortions:
         self.signup_button = Button(self.login_frame, text="Sign Up", font=("calibri",18,"bold"), bg="black", fg="white", bd=0, cursor="hand2",activebackground="black",activeforeground="grey",command=self.signupScreen)
         self.signup_button.place(x=950, y=400)
         #adding forgot password button
-        self.forgot_password_button = Button(self.login_frame, text="Forgot Password?", font=("calibri",10,"bold"), bg="black", fg="light blue", bd=0, cursor="hand2",activebackground="black")
-        self.forgot_password_button.place(x=960, y=380)
-
+        self.login_forgot_password_button = Button(self.login_frame, text="Forgot Password?", font=("calibri",10,"bold"), bg="black", fg="light blue", bd=0, cursor="hand2",activebackground="black",activeforeground="grey")
+        self.login_forgot_password_button.place(x=960, y=380)
+        self.login_forgot_password_button.config(command=self.forgotPassword)
+#method for show and hide password icon
     def toggle_password_visibility(self):
         if self.password_visible:
             # Hide the password and update the button icon
@@ -281,7 +285,17 @@ class PawfectPortions:
         self.profile = ImageTk.PhotoImage(self.profile)
         self.profile_button = Button(self.bottom_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
         self.profile_button.place(x=90, y=10)
+        self.profile_button.config(command=self.profileScreen)
         
+        # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.bottom_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        #self.petprofile_button.config(command=self.dogProfileScreen)
+
+  
         
         #home button    
         self.home_button = Button(self.bottom_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
@@ -296,6 +310,7 @@ class PawfectPortions:
         #cats button
         self.cats_button = Button(self.bottom_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
         self.cats_button.place(x=640, y=6)
+        self.cats_button.config(command=self.selectCatBreed)
         
         #Pet AI
         self.pet_ai_button = Button(self.bottom_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
@@ -310,6 +325,7 @@ class PawfectPortions:
         self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
         self.facebook_button = Button(self.bottom_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
         self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
         
         
         #place instagram icon as a button
@@ -318,6 +334,7 @@ class PawfectPortions:
         self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
         self.instagram_button = Button(self.bottom_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
         self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
         
         
         #twitter  icon as a button
@@ -326,7 +343,43 @@ class PawfectPortions:
         self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
         self.twitter_button = Button(self.bottom_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
         self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+    
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
         
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
+        
+        #creating the social media methods
+    def selectfacebook(self):
+        webbrowser.open_new("https://www.facebook.com/pawfect.portions/")  
+
+    def selectinstagram(self):
+        webbrowser.open_new("https://www.instagram.com/pawfect._portions/")
+
+    def selecttwitter(self):
+        webbrowser.open_new("https://twitter.com/PawfectPortions")
     
     #petai screen
     def petAiScreen(self):
@@ -352,6 +405,7 @@ class PawfectPortions:
         #cats button
         self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
         self.cats_button.place(x=640, y=6)
+        self.cats_button.config(command=self.selectCatBreed)
         
         #Pet AI
         self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
@@ -374,8 +428,19 @@ class PawfectPortions:
         self.profile = ImageTk.PhotoImage(self.profile)
         self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
         self.profile_button.place(x=90, y=10)
+        self.profile_button.config(command=self.profileScreen)
+         
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
         
         
+        
+    
         #facebook icon as a button
         self.facebook_icon = Image.open("social/facebook.png")
         self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
@@ -383,6 +448,7 @@ class PawfectPortions:
         
         self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
         self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
         
         #instagram icon as a button
         self.instagram_icon = Image.open("social/insta.png")
@@ -391,6 +457,7 @@ class PawfectPortions:
         
         self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
         self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
         
         #twitter icon as a button
         self.twitter_icon = Image.open("social/twitter.png")
@@ -399,6 +466,9 @@ class PawfectPortions:
         
         self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
         self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        
         
     
         #rest as frame for the rest of the screen with black background
@@ -462,6 +532,31 @@ class PawfectPortions:
     #     self.response_label.place(x=10, y=10)
         
         
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
     #dogs screen
     def selectDogBreed(self):
         #clear the window
@@ -476,10 +571,164 @@ class PawfectPortions:
         self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
         
         
-        
-        
         #buttons frame on top
         self.buttons_frame = Frame(self.root, bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+        
+        #dogs button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.place(x=520, y=6)
+        
+        #dogs button white
+        self.dogs_button.config(bg="white", fg="#242323")
+        
+        
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        self.cats_button.config(command=self.selectCatBreed)
+        
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        self.profile_button.config(command=self.profileScreen)
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+    
+        #select dog breed label bg #272727
+        self.select_dog_breed_label = Label(self.root, text="Select Dog Breed", font=("calibri", 30, ), bg="#272727", fg="white")
+        self.select_dog_breed_label.place(x=250, y=120)
+        
+        #dog breeds buttons as text
+        #labrador button
+        self.labrador_button = Button(self.root, text="Labrador", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.labrador_button.place(x=320, y=250)
+        self.labrador_button.config(command=self.labradorScreen)
+        
+        #german shepherd button
+        self.german_shepherd_button = Button(self.root, text="German Shepherd", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.german_shepherd_button.place(x=280, y=320)
+        self.german_shepherd_button.config(command=self.germanScreen)
+        
+        
+        #golden retriever button
+        self.golden_retriever_button = Button(self.root, text="Golden Retriever", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.golden_retriever_button.place(x=290, y=390)
+        self.golden_retriever_button.config(command=self.golden_retrever)
+        
+        #french bulldog button
+        self.french_bulldog_button = Button(self.root, text="French Bulldog", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.french_bulldog_button.place(x=300, y=460)
+        self.french_bulldog_button.config(command=self.frenchBulldogScreen)
+        
+        #siberian husky button
+        self.siberian_husky_button = Button(self.root, text="Siberian Husky", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.siberian_husky_button.place(x=300, y=530)
+        self.siberian_husky_button.config(command=self.siberian_husky)
+        
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
+        #adding details of the breed under the top frame
+        
+        # adding a new frame for french bulldog
+    def frenchBulldogScreen(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+            
+        #display selectbreed image full screen
+        self.bg = Image.open("images/French Bulldog.jpg")
+        self.bg = self.bg.resize((1300, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        #adding lable for the breed
+        self.breed_label = Label(self.root, text="French Bulldog.", font=("calibri", 50,"bold"),bg="#eef4f4" ,fg="black")
+        self.breed_label.place(x=40, y=100)
+        
+        #create a back button to go back to the dog breeds right bottom corner
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18, "bold"), bg="#eef4f4", fg="black", bd=0, cursor="hand2")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.selectDogBreed)
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root , bg="#242323")
         self.buttons_frame.place(x=0, y=0, width=1200, height=60)
         
         #home button
@@ -511,6 +760,7 @@ class PawfectPortions:
         
         self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
         self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
         
         #instagram icon as a button
         self.instagram_icon = Image.open("social/insta.png")
@@ -519,6 +769,7 @@ class PawfectPortions:
         
         self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
         self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
         
         #twitter icon as a button
         self.twitter_icon = Image.open("social/twitter.png")
@@ -527,6 +778,541 @@ class PawfectPortions:
         
         self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
         self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        self.profile_button.config(command=self.loginScreen)
+        
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+    
+        
+
+    
+    
+    
+    def siberian_husky(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display selectbreed image full screen
+        self.bg = Image.open("images/samplehusky.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        
+        #create a back button to go back to the dog breeds right bottom corner
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18, "bold"), bg="#706e6f", fg="white", bd=0, cursor="hand2")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.selectDogBreed)
+        
+        #create a back button to go back to the dog breeds right bottom corner
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18, "bold"), bg="#edeef2", fg="Black", bd=0, cursor="hand2")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.selectDogBreed)
+        
+        
+        #adding lable for the breed
+        self.breed_label = Label(self.root, text="Husky.", font=("calibri", 50,"bold"), bg="#737172", fg="black")
+        self.breed_label.place(x=20, y=60)
+        
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root , bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+        
+        #dogs button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.place(x=520, y=6)
+        
+        #dogs button white
+        self.dogs_button.config(bg="white", fg="#242323")
+        
+        
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        self.profile_button.config(command=self.profileScreen)
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
+        
+        
+        
+    
+    def golden_retrever(self):
+    #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display selectbreed image full screen
+        self.bg = Image.open("images/golden.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        
+        #create a back button to go back to the dog breeds right bottom corner
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18, "bold"), bg="#706e6f", fg="white", bd=0, cursor="hand2")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.selectDogBreed)
+        
+        #create a back button to go back to the dog breeds right bottom corner
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18, "bold"), bg="#edeef2", fg="Black", bd=0, cursor="hand2")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.selectDogBreed)
+        
+        
+        #adding lable for the breed
+        self.breed_label = Label(self.root, text="Golden Retrever.", font=("calibri", 50,"bold"), bg="#f9c847", fg="black")
+        self.breed_label.place(x=20, y=60)
+        
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root , bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+        
+        #dogs button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.place(x=520, y=6)
+        
+        #dogs button white
+        self.dogs_button.config(bg="white", fg="#242323")
+        
+        
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        self.profile_button.config(command=self.profileScreen)
+        
+            # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+    
+
+    # adding a new frame for labrador
+    def labradorScreen(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display selectbreed image full screen
+        self.bg = Image.open("images/whitelab.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        
+        #create a back button to go back to the dog breeds right bottom corner
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18, "bold"), bg="#edeef2", fg="Black", bd=0, cursor="hand2")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.selectDogBreed)
+        
+        
+        #adding lable for the breed
+        self.breed_label = Label(self.root, text="Labrador.", font=("calibri", 60,"bold"), bg="#f8f8fa", fg="black")
+        self.breed_label.place(x=50, y=120)
+        
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root , bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+        
+        #dogs button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.place(x=520, y=6)
+        
+        #dogs button white
+        self.dogs_button.config(bg="white", fg="#242323")
+        
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        self.profile_button.config(command=self.profileScreen)
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+    
+
+        
+        
+        
+    def germanScreen(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+            
+        #display selectbreed image full screen
+        self.bg = Image.open("images/german1.png")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        
+        #create a back button to go back to the dog breeds right bottom corner
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.selectDogBreed)
+        
+        #adding lable for the breed
+        self.breed_label = Label(self.root, text="German Shepherd.", font=("calibri", 40,"bold"),bg="#242323" ,fg="white")
+        self.breed_label.place(x=40, y=100)
+        
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root , bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+        
+        #dogs button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.place(x=520, y=6)
+        
+        #dogs button white
+        self.dogs_button.config(bg="white", fg="#242323")
+        
+        
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
         
         #add logo image as a button 
         self.logo = Image.open("images/logout.jpg")
@@ -544,113 +1330,806 @@ class PawfectPortions:
         self.profile_button.place(x=90, y=10)
         
         
-        #select dog breed label bg #272727
-        self.select_dog_breed_label = Label(self.root, text="Select Dog Breed", font=("calibri", 30, ), bg="#272727", fg="white")
-        self.select_dog_breed_label.place(x=250, y=120)
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
         
-        #dog breeds buttons as text
-        #labrador button
-        self.labrador_button = Button(self.root, text="Labrador", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
-        self.labrador_button.place(x=320, y=250)
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
         
-        #german shepherd button
-        self.german_shepherd_button = Button(self.root, text="German Shepherd", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
-        self.german_shepherd_button.place(x=280, y=320)
+        #Cat Screen
+    def selectCatBreed(self):
+        #for clearing the previous window
+        for i in self.root.winfo_children():
+            i.destroy()
+        #display cat breed image
+        self.bg=Image.open("images/catbreed.JPEG")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)   
+
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root, bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+
+        #Dogs Button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.config(command=self.selectDogBreed)
+        self.dogs_button.place(x=520, y=6)
+
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+
+        #Cats button white
+        self.cats_button.config(bg="White", fg="#242323")
+
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
+        # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+
+        #select Cat breed label bg #272727
+        self.select_cat_breed_label = Label(self.root, text="Select Cat Breed", font=("calibri", 30, ), bg="#272727", fg="white")
+        self.select_cat_breed_label.place(x=250, y=120)
+        
+        #Cat breeds buttons as text
+        #Bengal cat button
+        self.bengal_cat_button = Button(self.root, text="Bengal Cat", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.bengal_cat_button.config(command=self.selectBengalCat)
+        self.bengal_cat_button.place(x=320, y=250)
+        
+        #Abyssinian button
+        self.abyssinian_button = Button(self.root, text="Abyssinian", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.abyssinian_button.config(command=self.selectAbyss)
+        self.abyssinian_button.place(x=320, y=320)
         
         
-        #golden retriever button
-        self.golden_retriever_button = Button(self.root, text="Golden Retriever", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
-        self.golden_retriever_button.place(x=290, y=390)
+        #Rag doll button
+        self.rag_doll_button = Button(self.root, text="Rag Doll", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.rag_doll_button.config(command=self.selectRagDoll)
+        self.rag_doll_button.place(x=330, y=390)
         
-        #french bulldog button
-        self.french_bulldog_button = Button(self.root, text="French Bulldog", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
-        self.french_bulldog_button.place(x=300, y=460)
+        #Maine coon button
+        self.maine_coon_button = Button(self.root, text="Maine Coon", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.maine_coon_button.config(command=self.selectMaineCoon)
+        self.maine_coon_button.place(x=310, y=460)
         
-        #siberian husky button
-        self.siberian_husky_button = Button(self.root, text="Siberian Husky", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
-        self.siberian_husky_button.place(x=300, y=530)
+        #British shorthair button
+        self.British_shorthair_button = Button(self.root, text="British Shorthair", font=("calibri", 18, "bold"), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.British_shorthair_button.config(command=self.selectBrithishShorthair)
+        self.British_shorthair_button.place(x=300, y=530)
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
         
-        #config command for the buttons
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+    
+    
+
+    # Bengal Cat Screen
+    def selectBengalCat(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display the Bengal Cat Image in full screen
+        self.bg = Image.open("images/bengalcat.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root, bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+
+        #Dogs Button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.config(command=self.selectDogBreed)
+        self.dogs_button.place(x=520, y=6)
+
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        #Cats button white
+        self.cats_button.config(bg="White", fg="#242323")
+
+        # Back button
+        self.back_button = Button(self.root, text="BACK", font=("calibri", 20), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.back_button.config(command=self.selectCatBreed)
+        self.back_button.place(x=1050, y=680)
+
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
+        #display bengal cat breed label bg #272727
+        self.select_bengal_cat_label = Label(self.root, text="Bengal Cat", font=("calibri", 40, ), bg="black", fg="white")
+        self.select_bengal_cat_label.place(x=150, y=120)
+        
+        # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
+        # Abyssinian Cat Screen
+    def selectAbyss(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display the Rag Doll Image in full screen
+        self.bg = Image.open("images/Abyss.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root, bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+
+        #Dogs Button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.config(command=self.selectDogBreed)
+        self.dogs_button.place(x=520, y=6)
+
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        #Cats button white
+        self.cats_button.config(bg="White", fg="#242323")
+
+        # Back button
+        self.back_button = Button(self.root, text="BACK", font=("calibri", 20), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.back_button.config(command=self.selectCatBreed)
+        self.back_button.place(x=1050, y=680)
+
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+
+
+
+        #display Abyssinian breed label bg #272727
+        self.select_Abyss_label = Label(self.root, text="Abyssinian", font=("calibri", 40, ), bg="black", fg="white")
+        self.select_Abyss_label.place(x=100, y=120)
+        
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
+         # Rag Doll Screen
+    def selectRagDoll(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display the Rag Doll Image in full screen
+        self.bg = Image.open("images/ragdoll.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root, bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+
+        #Dogs Button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.config(command=self.selectDogBreed)
+        self.dogs_button.place(x=520, y=6)
+
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        #Cats button white
+        self.cats_button.config(bg="White", fg="#242323")
+
+        # Back button
+        self.back_button = Button(self.root, text="BACK", font=("calibri", 20), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.back_button.config(command=self.selectCatBreed)
+        self.back_button.place(x=1050, y=680)
+
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)  
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
+        #display RagDoll breed label bg #272727
+        self.select_RagDoll_label = Label(self.root, text="RagDoll", font=("calibri", 40, ), bg="black", fg="white")
+        self.select_RagDoll_label.place(x=150, y=120)
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
+         # Maine Coon Screen
+    def selectMaineCoon(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display the Rag Doll Image in full screen
+        self.bg = Image.open("images/mainecoon.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root, bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+
+        #Dogs Button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.config(command=self.selectDogBreed)
+        self.dogs_button.place(x=520, y=6)
+
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        #Cats button white
+        self.cats_button.config(bg="White", fg="#242323")
+
+        # Back button
+        self.back_button = Button(self.root, text="BACK", font=("calibri", 20), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.back_button.config(command=self.selectCatBreed)
+        self.back_button.place(x=1050, y=680)
+
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        self.facebook_button.config(command=self.selectfacebook)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
+        #display RagDoll breed label bg #272727
+        self.select_maine_label = Label(self.root, text="Maine Coon", font=("calibri", 40, ), bg="black", fg="white")
+        self.select_maine_label.place(x=150, y=120)
+        
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+    
+   
+        
+          # Brithish Shorthair Screen
+    def selectBrithishShorthair(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #display the Rag Doll Image in full screen
+        self.bg = Image.open("images/Brithishshorthair.jpg")
+        self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
+        self.bg = ImageTk.PhotoImage(self.bg)
+        self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
+
+        
+        #buttons frame on top
+        self.buttons_frame = Frame(self.root, bg="#242323")
+        self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        #home button
+        self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.home_button.config(command=self.welcomeScreen)
+        self.home_button.place(x=400, y=6)
+
+        #Dogs Button
+        self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.dogs_button.config(command=self.selectDogBreed)
+        self.dogs_button.place(x=520, y=6)
+
+        #cats button
+        self.cats_button = Button(self.buttons_frame, text="cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.cats_button.place(x=640, y=6)
+        #Cats button white
+        self.cats_button.config(bg="White", fg="#242323")
+
+        # Back button
+        self.back_button = Button(self.root, text="BACK", font=("calibri", 20), bg="#272727", fg="white", bd=0, cursor="hand2")
+        self.back_button.config(command=self.selectCatBreed)
+        self.back_button.place(x=1050, y=680)
+
+        #Pet AI
+        self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.pet_ai_button.config(command=self.petAiScreen)
+        self.pet_ai_button.place(x=760, y=6)
+        
+        #facebook icon as a button
+        self.facebook_icon = Image.open("social/facebook.png")
+        self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
+        self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
+        
+        self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
+        self.facebook_button.place(x=1000, y=13)
+        
+        #instagram icon as a button
+        self.instagram_icon = Image.open("social/insta.png")
+        self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
+        self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
+        
+        self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
+        self.instagram_button.place(x=1050, y=15)
+        self.instagram_button.config(command=self.selectinstagram)
+        
+        #twitter icon as a button
+        self.twitter_icon = Image.open("social/twitter.png")
+        self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
+        self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
+        
+        self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
+        self.twitter_button.place(x=1100, y=15)
+        self.twitter_button.config(command=self.selecttwitter)
+        
+        #add logo image as a button 
+        self.logo = Image.open("images/logout.jpg")
+        self.logo = self.logo.resize((40, 40), Image.LANCZOS)
+        self.logo = ImageTk.PhotoImage(self.logo)
+        self.logo_button = Button(self.buttons_frame, image=self.logo, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.logo_button.place(x=20, y=10)
+        self.logo_button.config(command=self.loginScreen)
+        
+        #add profile image as a button
+        self.profile = Image.open("images/profile.png")
+        self.profile = self.profile.resize((40, 40), Image.LANCZOS)
+        self.profile = ImageTk.PhotoImage(self.profile)
+        self.profile_button = Button(self.buttons_frame, image=self.profile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.profile_button.place(x=90, y=10)
+        
+        #display Brithish Shorthair breed label bg #272727
+        self.select_brithish_label = Label(self.root, text="Brithish Shorthair", font=("calibri", 40, ), bg="black", fg="white")
+        self.select_brithish_label.place(x=150, y=120)
+        
+         # add Petprofile image as a button
+        self.petprofile = Image.open("images/Petprofile.jpg")
+        self.petprofile = self.petprofile.resize((60, 60), Image.LANCZOS)
+        self.petprofile = ImageTk.PhotoImage(self.petprofile)
+        self.petprofile_button = Button(self.buttons_frame, image=self.petprofile, bg="#242323", activebackground="#242323",bd=0, cursor="hand2")
+        self.petprofile_button.place(x=145, y=0)
+        
+        self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
+
+        # Create the dropdown menu
+        self.dropdown_menu = Menu(self.root, tearoff=0)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+    #dropdown menu for the pet profile
+    def show_dropdown_menu(self, event):
+        """Show the dropdown menu near the button."""
+        try:
+            self.dropdown_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+        
+            self.dropdown_menu.grab_release()
+
+    def view_profile(self):
+        pass
+
+    def Dogpetprofile(self):
+         self.petprofile_button.config(command=self.dogProfileScreen)
+     
+    def Catpetprofile(self):
+        self.petprofile_button.config(command=self.catProfileScreen)
+        
+        
+        
+
+        
+        
+
+        
+        
+        # #config command for the buttons
         # self.labrador_button.config(command=self.dogScreen("Labrador"))
         # self.german_shepherd_button.config(command=self.dogScreen("German Shepherd"))
         # self.golden_retriever_button.config(command=self.dogScreen("Golden Retriever"))
         # self.french_bulldog_button.config(command=self.dogScreen("French Bulldog"))
         # self.siberian_husky_button.config(command=self.dogScreen("Siberian Husky"))
         
-    #dog screen
-    # def dogScreen(self, breed):
-    #     #clear the window
-    #     for i in self.root.winfo_children():
-    #         i.destroy()
-            
-    #     #display dog breed image full screen
-    #     self.bg = Image.open(f"images/{breed}.jpg")
-    #     self.bg = self.bg.resize((1200, 750), Image.LANCZOS)
-    #     self.bg = ImageTk.PhotoImage(self.bg)
-    #     self.bg_image = Label(self.root, image=self.bg).place(x=0, y=0, relwidth=1, relheight=1)
-        
-        
-        
-        
-        
-        
-    #     #buttons frame on top
-    #     self.buttons_frame = Frame(self.root, bg="#242323")
-    #     self.buttons_frame.place(x=0, y=0, width=1200, height=60)
-        
-        
-    #     #home button
-    #     self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-    #     self.home_button.config(command=self.welcomeScreen)
-    #     self.home_button.place(x=400, y=6)
-        
-    #     #dogs button
-    #     self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-    #     self.dogs_button.config(command=self.selectDogBreed)
-    #     self.dogs_button.place(x=520, y=6)
-        
-    #     #dogs button white
-    #     self.dogs_button.config(bg="white", fg="#242323")
-        
-    #     #cats button
-    #     self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-    #     self.cats_button.place(x=640, y=6)
-        
-    #     #Pet AI
-    #     self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
-    #     self.pet_ai_button.config(command=self.petAiScreen)
-    #     self.pet_ai_button.place(x=760, y=6)
-        
-    #     #facebook icon as a button
-    #     self.facebook_icon = Image.open("social/facebook.png")
-    #     self.facebook_icon = self.facebook_icon.resize((25, 25), Image.LANCZOS)
-    #     self.facebook_icon = ImageTk.PhotoImage(self.facebook_icon)
-        
-    #     self.facebook_button = Button(self.buttons_frame, image=self.facebook_icon, bg="#242323", bd=0, cursor="hand2")
-    #     self.facebook_button.place(x=1000, y=13)
-        
-    #     #instagram icon as a button
-    #     self.instagram_icon = Image.open("social/insta.png")
-    #     self.instagram_icon = self.instagram_icon.resize((25, 25), Image.LANCZOS)
-    #     self.instagram_icon = ImageTk.PhotoImage(self.instagram_icon)
-        
-    #     self.instagram_button = Button(self.buttons_frame, image=self.instagram_icon, bg="#242323", bd=0, cursor="hand2")
-    #     self.instagram_button.place(x=1050, y=15)
-        
-    #     #twitter icon as a button
-    #     self.twitter_icon = Image.open("social/twitter.png")
-    #     self.twitter_icon = self.twitter_icon.resize((25, 25), Image.LANCZOS)
-    #     self.twitter_icon = ImageTk.PhotoImage(self.twitter_icon)
-
-    #     self.twitter_button = Button(self.buttons_frame, image=self.twitter_icon, bg="#242323", bd=0, cursor="hand2")
-    #     self.twitter_button.place(x=1100, y=15)
-        
-        
-        
-    #     #display breed name label
-    #     self.breed_label = Label(self.root, text=breed, font=("calibri", 30, "bold"), bg="#272727", fg="white")
-    #     self.breed_label.place(x=500, y=120)
-        
+    
     # adding signup page entry boxes data to the database
     def signup_data(self):
     #get the data from the entry boxes
@@ -695,13 +2174,6 @@ class PawfectPortions:
         email = self.username_entry.get()
         password = self.password_entry.get()
         
-        # print("Email:", email)s
-        
-        # print("Password:", password)
-        
-        # if email == "" or password == "":
-        #     messagebox.showerror("Error", "All fields are required")
-        
         # checking the email and password with the database
         cursor = pdsdb.cursor()
         select_data = f"SELECT * FROM user_info WHERE email = '{email}' AND password = '{password}'"
@@ -710,12 +2182,451 @@ class PawfectPortions:
 
         if user:
             self.welcomeScreen()
+        elif email == "admin" and password == "admin":
+            self.adminScreen()
         else:
             messagebox.showerror("Error", "Invalid Email or Password")
             return
         
+    #forgot password page
+    def forgotPassword(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #crete a new frame for the forgot password page
+        self.forgot_password_frame = Frame(self.root, bg="black")
+        self.forgot_password_frame.place(x=0, y=0, width=1200, height=750)
         
         
+        #forgot password label
+        self.forgot_password_label = Label(self.root, text="Forgot Password", font=("calibri", 30), bg="black", fg="white")
+        self.forgot_password_label.place(x=500, y=20)
+        
+        #email label
+        self.email_label = Label(self.root, text="Email:", font=("calibri", 20), bg="black", fg="white")
+        self.email_label.place(x=400, y=100)
+        
+        #email entry
+        self.email_entry = Entry(self.root, font=("calibri", 20), bd=0)
+        self.email_entry.place(x=500, y=100)
+        
+        #submit button
+        self.forgot_password_submit_button = Button(self.root, text="Submit", font=("calibri", 18), bg="black", fg="white", bd=0, cursor="hand2")
+        self.forgot_password_submit_button.place(x=600, y=150)
+        self.forgot_password_submit_button.config(command=self.updatePassword)
+        
+        #back button
+        self.back_button = Button(self.root, text="Back", font=("calibri", 18,"bold"), bg="black", fg="white", bd=0, cursor="hand2")
+        self.back_button.place(x=600, y=400)
+        self.back_button.config(command=self.loginScreen)
+        
+
+        
+        
+    #after submitting the email, check if the email is in the database and update the password
+    def updatePassword(self):
+        
+        entered_email = self.email_entry.get()
+
+    # Print the entered email address
+        #print("Entered Email Address:", entered_email)
+        
+        self.entered_email = Label(self.root, text=entered_email, font=("calibri", 20), bg="black", fg="white")
+        self.entered_email.place(x=500, y=100)
+        
+        self.forgot_password_submit_button.destroy()
+
+        # Remove the email entry box
+        self.email_entry.destroy()
+        
+        #check if the email is in the database
+        cursor = pdsdb.cursor()
+        select_data = f"SELECT * FROM user_info WHERE email = '{entered_email}'"
+        cursor.execute(select_data)
+        user = cursor.fetchone()
+            
+        if user:
+            #update the password
+            self.new_password = Label(self.root, text="Enter new Password:", font=("calibri", 20), bg="black", fg="white")
+            self.new_password.place(x=250, y=200)
+            
+            self.new_password_entry = Entry(self.root, font=("calibri", 20), bd=0)
+            self.new_password_entry.place(x=500, y=200)
+            
+            self.new_confirm_password_label = Label(self.root, text="Confirm Password:", font=("calibri", 20), bg="black", fg="white")
+            self.new_confirm_password_label.place(x=250, y=250)
+            
+            self.new_confirm_password_entry = Entry(self.root, font=("calibri", 20), bd=0)
+            self.new_confirm_password_entry.place(x=500, y=250)
+
+            self.submit_button = Button(self.root, text="Upate Password", command=self.update_new_password, font=("calibri", 20), bg="black", fg="white",activebackground="black", bd=0, cursor="hand2")
+            self.submit_button.place(x=550, y=300)
+            
+        else:
+            messagebox.showerror("Error", "Email Not Found")
+            self.loginScreen()
+
+    def update_new_password(self):
+
+            #password validation
+            if len(self.new_password_entry.get()) < 8 or not re.search("[a-z]", self.new_password_entry.get()) or not re.search("[A-Z]", self.new_password_entry.get()) or not re.search("[0-9]", self.new_password_entry.get()):
+                messagebox.showerror("Error", "Password must contain at least 8 characters, including letters and numbers")
+                return
+            #check if the password and confirm password are the same
+            if self.new_password_entry.get() != self.new_confirm_password_entry.get():
+                messagebox.showerror("Error", "Password and Confirm Password should be the same")
+                return
+            else:
+                
+                
+                new_password = self.new_confirm_password_entry.get()
+                email = self.email_entry.get()
+                cursor = pdsdb.cursor()
+                update_data = f"UPDATE user_info SET password = '{new_password}' WHERE email = '{email}'"
+                cursor.execute(update_data)
+                pdsdb.commit()
+                messagebox.showinfo("Success", "Password Updated")
+                self.loginScreen()
+    #creating a profile page window and displaying the user details that are stored in the database for the signed in user
+    def profileScreen(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+            
+        #creating a new frame for the profile page
+        self.profile_frame = Frame(self.root, bg="black")
+        self.profile_frame.place(x=0, y=0, width=1200, height=750)
+        self.userprofile = Image.open("images/userprofilebg.jpg")
+        self.userprofile = self.userprofile.resize((1200, 750), Image.LANCZOS)
+        self.userprofile = ImageTk.PhotoImage(self.userprofile)
+        self.userprofile_image = Label(self.profile_frame, image=self.userprofile).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        
+        
+        #  #entry user detials as label and update button
+        # mycursor = pdsdb.cursor()
+        
+        # email = self.email_entry.get()
+        # mycursor.execute("SELECT * FROM user_info WHERE email = %s", (email,))
+        # user = mycursor.fetchone()
+
+        # fullname_label = tk.Label(self.profile_frame, text=user[1], font=("Calibri", 15), bg="white")
+        # fullname_label.place(x=180, y=50)
+
+        # lastname_label = tk.Label(self.profile_frame, text=user[2], font=("Calibri", 15), bg="white")
+        # lastname_label.place(x=170, y=110)
+
+        # email_label = tk.Label(self.profile_frame, text=user[0], font=("Calibri", 15), bg="white")
+        # email_label.place(x=120, y=170)
+
+        # phone_label = tk.Label(self.profile_frame, text=user[3], font=("Calibri", 15), bg="white")
+        # phone_label.place(x=120, y=230)
+
+
+  
+        # #update button
+        # self.update_button = Button(self.profile_frame, text="Update", font=("Calibri", 15, "bold"), bg="#b89b3f", fg="white", command=self.update_profile).place(x=100, y=420)
+        
+    
+        
+        #profile label
+        self.profile_label = Label(self.profile_frame, text="My Profile", font=("calibri", 30), bg="#010204", fg="white")
+        self.profile_label.place(x=550, y=20)
+        
+        #First Name label
+        self.first_name_label = Label(self.profile_frame, text="First Name:", font=("calibri", 20), bg="#010204", fg="white")
+        self.first_name_label.place(x=400, y=100)
+        
+        #Last Name label
+        self.last_name_label = Label(self.profile_frame, text="Last Name:", font=("calibri", 20), bg="#010204", fg="white")
+        self.last_name_label.place(x=400, y=150)
+        
+        #Email label
+        self.email_label = Label(self.profile_frame, text="Email:", font=("calibri", 20), bg="#010204", fg="white")
+        self.email_label.place(x=400, y=200)
+        
+        #Mobile label
+        self.mobile_label = Label(self.profile_frame, text="Mobile:", font=("calibri", 20), bg="#010204", fg="white")
+        self.mobile_label.place(x=400, y=250)
+        
+        #back button
+        self.back_button = Button(self.profile_frame, text="Back", font=("calibri", 18), bg="#010204", fg="white", bd=0, cursor="hand2",activebackground="#010204", activeforeground="white")
+        self.back_button.place(x=580, y=310)
+        self.back_button.config(command=self.welcomeScreen)
+        
+        
+     
+    #Dog pet profile page
+    def dogProfileScreen(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #creating a new frame for the pet profile page
+        self.pet_profile_frame = Frame(self.root, bg="black")
+        self.pet_profile_frame.place(x=0, y=0, width=1200, height=750)
+        
+        self.dogbg =Image.open("images/dogprofile.jpg")
+        self.dogbg = self.dogbg.resize((1200, 750), Image.LANCZOS)
+        self.dogbg = ImageTk.PhotoImage(self.dogbg)
+        self.dogbg_image = Label(self.pet_profile_frame, image=self.dogbg).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        
+        #create a back button to go back to the home page
+        self.back_button = Button(self.pet_profile_frame, text="Back", font=("calibri", 18, "bold"), bg="#010101", fg="white", bd=0, cursor="hand2",activebackground="black", activeforeground="white")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.welcomeScreen)
+        
+        #pet profile label 
+        self.pet_profile_label = Label(self.pet_profile_frame, text="Sign Up Your Dog Profile", font=("calibri", 40), bg="#010101", fg="white")
+        self.pet_profile_label.place(x=430, y=30)
+        
+        #pet name label
+        self.pet_name_label = Label(self.pet_profile_frame, text="Pet Name:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_name_label.place(x=470, y=150)
+        
+        #pet name label
+        self.pet_name_label = Label(self.pet_profile_frame, text="_____________________", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_name_label.place(x=590, y=150)
+        
+        #pet name entry box
+        self.pet_name_entry = Entry(self.pet_profile_frame, font=("calibri", 20),bg="#010101", bd=0,fg="white",relief="ridge",insertbackground="white")
+        self.pet_name_entry.place(x=590, y=146)
+
+
+        #pet breed dropdown menu below the pet name to select the breed German Shepherd, Labrador, French Bulldog, Golden Retriever, Siberian husky
+        self.pet_breed_label = Label(self.pet_profile_frame, text="Pet Breed:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_breed_label.place(x=470, y=200)
+        self.pet_breed = StringVar()
+        self.pet_breed.set("Select Breed")
+        self.pet_breed_dropdown = OptionMenu(self.pet_profile_frame, self.pet_breed, "German Shepherd", "Labrador", "Golden Retriever", "French Bulldog", "Siberian Husky")
+        self.pet_breed_dropdown.config(bg="#010101", fg="white")
+        self.pet_breed_dropdown.place(x=607, y=205)
+        
+
+        
+        #pet gender label
+        self.pet_gender_label = Label(self.pet_profile_frame, text="Gender:", font=("calibri", 20), bg="black", fg="white")
+        self.pet_gender_label.place(x=470, y=250)  
+        
+        #radio buttons for pet gender male or female
+        self.gender = StringVar(value=" ")
+        self.male_radio = Radiobutton(self.pet_profile_frame,text="Male", variable=self.gender,value="Male", font=("calibri", 20), bg="#010101", fg="white", selectcolor="black")
+        self.male_radio.place(x=583, y=247)
+        
+        self.female_radio = Radiobutton(self.pet_profile_frame,text="Female", variable=self.gender,value="Female",font=("calibri", 20), bg="#010101", fg="white", selectcolor="black")
+        self.female_radio.place(x=700, y=247)
+        
+        #pet age label
+        self.pet_age_label = Label(self.pet_profile_frame, text="Pet Age:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_age_label.place(x=470, y=300)
+
+        #pet age in months and years
+        self.months = StringVar()
+        self.years = StringVar()
+
+        #create dropdown menu for years
+        self.years_label = Label(self.pet_profile_frame, text="Years:", font=("calibri", 20), bg="#010101", fg="white")
+        self.years_label.place(x=590, y=300) 
+        self.years_dropdown = OptionMenu(self.pet_profile_frame, self.years, *range(0, 15))
+        self.years_dropdown.config(bg="#010101", fg="white")
+        self.years_dropdown.place(x=663, y=303) 
+        #create dropdown menu for months
+        self.months_label = Label(self.pet_profile_frame, text="Months:", font=("calibri", 20), bg="#010101", fg="white")
+        self.months_label.place(x=740, y=300)  
+        self.months_dropdown = OptionMenu(self.pet_profile_frame, self.months, *range(0, 11))
+        self.months_dropdown.config(bg="#010101", fg="white")
+        self.months_dropdown.place(x=840, y=303)  
+        
+        #pet color label
+        self.pet_color_label = Label(self.pet_profile_frame, text="Pet Color:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_color_label.place(x=470, y=350)  
+        
+        #pet color label
+        self.pet_color_label = Label(self.pet_profile_frame, text="_____________________", font=("calibri", 20), bg="white", fg="white")
+        self.pet_color_label.place(x=590, y=350)
+        
+        #pet color entry box
+        self.pet_color_entry = Entry(self.pet_profile_frame, font=("calibri", 20), bg="#010101", fg="white", bd=0, relief="ridge", insertbackground="white")
+        self.pet_color_entry.place(x=590, y=350)
+        
+        
+        #submit button
+        self.pet_profile_submit_button = Button(self.pet_profile_frame, text="Submit", font=("calibri", 20), bg="#010101", fg="white", bd=0, cursor="hand2",activebackground="black", activeforeground="white")
+        self.pet_profile_submit_button.place(x=650, y=485)
+        self.pet_profile_submit_button.config(command=self.dogpetProfileData)
+        
+    #adding the dog pet profile data to the database
+
+    #Cat pet screen
+    
+    def catProfileScreen(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+        
+        #creating a new frame for the pet profile page
+        self.pet_profile_frame = Frame(self.root, bg="black")
+        self.pet_profile_frame.place(x=0, y=0, width=1200, height=750)
+        
+        self.dogbg =Image.open("images/catprofile.jpg")
+        self.dogbg = self.dogbg.resize((1200, 750), Image.LANCZOS)
+        self.dogbg = ImageTk.PhotoImage(self.dogbg)
+        self.dogbg_image = Label(self.pet_profile_frame, image=self.dogbg).place(x=0, y=0, relwidth=1, relheight=1)
+        
+        
+        #create a back button to go back to the home page
+        self.back_button = Button(self.pet_profile_frame, text="Back", font=("calibri", 18, "bold"), bg="#010101", fg="white", bd=0, cursor="hand2",activebackground="Black", activeforeground="white")
+        self.back_button.place(x=1000, y=650)
+        self.back_button.config(command=self.welcomeScreen)
+        
+        #pet profile label 
+        self.pet_profile_label = Label(self.pet_profile_frame, text="Sign Up Your Cat Profile", font=("calibri", 40), bg="#010101", fg="white")
+        self.pet_profile_label.place(x=430, y=30)
+        
+        #pet name label
+        self.pet_name_label = Label(self.pet_profile_frame, text="Pet Name:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_name_label.place(x=470, y=150)
+        
+        #pet name label
+        self.pet_name_label = Label(self.pet_profile_frame, text="_____________________", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_name_label.place(x=590, y=150)
+        
+        #pet name entry box
+        self.pet_name_entry = Entry(self.pet_profile_frame, font=("calibri", 20),bg="#010101", bd=0,fg="white",relief="ridge",insertbackground="white")
+        self.pet_name_entry.place(x=590, y=146)
+
+
+        #pet breed dropdown menu below the pet name to select the breed German Shepherd, Labrador, French Bulldog, Golden Retriever, Siberian husky
+        self.pet_breed_label = Label(self.pet_profile_frame, text="Pet Breed:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_breed_label.place(x=470, y=200)
+        self.pet_breed = StringVar()
+        self.pet_breed.set("Select Breed")
+        self.pet_breed_dropdown = OptionMenu(self.pet_profile_frame, self.pet_breed, "Bengal Cat", "Abyssinian", "Rag Doll", "Maine coon", "British shorthair")
+        self.pet_breed_dropdown.config(bg="#010101", fg="white")
+        self.pet_breed_dropdown.place(x=607, y=205)
+        
+
+        
+        #pet gender label
+        self.pet_gender_label = Label(self.pet_profile_frame, text="Gender:", font=("calibri", 20), bg="black", fg="white")
+        self.pet_gender_label.place(x=470, y=250)  
+        
+        #radio buttons for pet gender male or female
+        self.gender = StringVar(value=" ")
+        self.male_radio = Radiobutton(self.pet_profile_frame,text="Male", variable=self.gender,value="Male", font=("calibri", 20), bg="#010101", fg="white", selectcolor="black")
+        self.male_radio.place(x=583, y=247)
+        
+        self.female_radio = Radiobutton(self.pet_profile_frame,text="Female", variable=self.gender,value="Female",font=("calibri", 20), bg="#010101", fg="white", selectcolor="black")
+        self.female_radio.place(x=700, y=247)
+        
+        #pet age label
+        self.pet_age_label = Label(self.pet_profile_frame, text="Pet Age:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_age_label.place(x=470, y=300)
+
+        #pet age in months and years
+        self.months = StringVar()
+        self.years = StringVar()
+
+        #create dropdown menu for years
+        self.years_label = Label(self.pet_profile_frame, text="Years:", font=("calibri", 20), bg="#010101", fg="white")
+        self.years_label.place(x=590, y=300) 
+        self.years_dropdown = OptionMenu(self.pet_profile_frame, self.years, *range(0, 16))
+        self.years_dropdown.config(bg="#010101", fg="white")
+        self.years_dropdown.place(x=663, y=303) 
+        #create dropdown menu for months
+        self.months_label = Label(self.pet_profile_frame, text="Months:", font=("calibri", 20), bg="#010101", fg="white")
+        self.months_label.place(x=740, y=300)  
+        self.months_dropdown = OptionMenu(self.pet_profile_frame, self.months, *range(0, 11))
+        self.months_dropdown.config(bg="#010101", fg="white")
+        self.months_dropdown.place(x=840, y=303)  
+        
+        #pet color label
+        self.pet_color_label = Label(self.pet_profile_frame, text="Pet Color:", font=("calibri", 20), bg="#010101", fg="white")
+        self.pet_color_label.place(x=470, y=350)  
+        
+        #pet color label
+        self.pet_color_label = Label(self.pet_profile_frame, text="_____________________", font=("calibri", 20), bg="white", fg="white")
+        self.pet_color_label.place(x=590, y=350)
+        
+        #pet color entry box
+        self.pet_color_entry = Entry(self.pet_profile_frame, font=("calibri", 20), bg="#010101", fg="white", bd=0, relief="ridge", insertbackground="white")
+        self.pet_color_entry.place(x=590, y=350)
+        
+        
+        #submit button
+        self.pet_profile_submit_button = Button(self.pet_profile_frame, text="Submit", font=("calibri", 20), bg="#010101", fg="white", bd=0, cursor="hand2",activebackground="black", activeforeground="white")
+        self.pet_profile_submit_button.place(x=650, y=485)
+        self.pet_profile_submit_button.config(command=self.dogpetProfileData)
+        
+    
+    
+        
+        #admin page
+        
+        
+
+    def adminScreen(self):
+        #clear the window
+        for i in self.root.winfo_children():
+            i.destroy()
+            
+        #creating a new frame for the admin page
+        self.admin_frame = Frame(self.root, bg="black")
+        self.admin_frame.place(x=0, y=0, width=1200, height=750)
+        
+        #admin label
+        self.admin_label = Label(self.admin_frame, text="Admin Page", font=("calibri", 30), bg="black", fg="white")
+        self.admin_label.place(x=500, y=20)
+        
+        #back button
+        self.back_button = Button(self.admin_frame, text="Back", font=("calibri", 18), bg="black", fg="white", bd=0, cursor="hand2")
+        self.back_button.place(x=600, y=400)
+        self.back_button.config(command=self.loginScreen)
+        
+   
+        
+
+    
+        
+        
+        
+        
+        # #buttons frame on top
+        # self.buttons_frame = Frame(self.root, bg="#242323")
+        # self.buttons_frame.place(x=0, y=0, width=1200, height=60)
+        
+        
+        # #home button
+        # self.home_button = Button(self.buttons_frame, text="Home", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        # self.home_button.config(command=self.welcomeScreen)
+        # self.home_button.place(x=400, y=6)
+        
+        # #dogs button
+        # self.dogs_button = Button(self.buttons_frame, text="Dogs", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        # self.dogs_button.config(command=self.selectDogBreed)
+        # self.dogs_button.place(x=520, y=6)
+        
+        # #dogs button white
+        # self.dogs_button.config(bg="white", fg="#242323")
+        
+        # #cats button
+        # self.cats_button = Button(self.buttons_frame, text="Cats", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        # self.cats_button.place(x=640, y=6)
+        
+        # #Pet AI
+        # self.pet_ai_button = Button(self.buttons_frame, text="Pet AI", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        # self.pet_ai_button.config(command=self.petAiScreen)
+        # self.pet_ai_button.place(x=760, y=6)
+        
+        # #facebook icon as a button
+        # self.facebook_icon = Image.open("social/facebook.png")  
+        
+        
+        
+      
+       
 
         
         

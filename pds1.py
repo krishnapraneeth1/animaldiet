@@ -349,7 +349,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     
@@ -360,15 +360,6 @@ class PawfectPortions:
         finally:
         
             self.dropdown_menu.grab_release()
-
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
         
         
         #creating the social media methods
@@ -532,30 +523,24 @@ class PawfectPortions:
     #     self.response_label.place(x=10, y=10)
         
         
+        # Bind the petprofile_button to show the dropdown menu on left click
         self.petprofile_button.bind("<Button-1>", self.show_dropdown_menu)
 
-        # Create the dropdown menu
-        self.dropdown_menu = Menu(self.root, tearoff=0)
+        # Create the dropdown menu with a different design
+        self.dropdown_menu = Menu(self.root, tearoff=0, bg="#242323", fg="white", bd=0, font=("calibri", 20, "bold"))
         self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
-        self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
+        self.dropdown_menu.add_command(label="Register Cat", command=self.catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
-    
+
+       
     def show_dropdown_menu(self, event):
         """Show the dropdown menu near the button."""
         try:
+            self.dropdown_menu.config(bg='black', fg='white')  # Change background and foreground color
             self.dropdown_menu.tk_popup(event.x_root, event.y_root)
         finally:
-        
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
         
     #dogs screen
     def selectDogBreed(self):
@@ -695,15 +680,6 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
-        
         #adding details of the breed under the top frame
         
         # adding a new frame for french bulldog
@@ -819,19 +795,6 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
-    
-        
-
-    
-    
     
     def siberian_husky(self):
         #clear the window
@@ -951,18 +914,6 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
-        
-        
-        
-        
     
     def golden_retrever(self):
     #clear the window
@@ -1084,7 +1035,7 @@ class PawfectPortions:
             self.dropdown_menu.grab_release()
 
     def view_profile(self):
-        pass
+        self.petprofile_button.config(command=self.view_Profile)
 
     def Dogpetprofile(self):
          self.petprofile_button.config(command=self.dogProfileScreen)
@@ -1100,16 +1051,6 @@ class PawfectPortions:
         finally:
         
             self.dropdown_menu.grab_release()
-
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
-    
 
     # adding a new frame for labrador
     def labradorScreen(self):
@@ -1226,18 +1167,7 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
     
-
-        
-        
         
     def germanScreen(self):
         #clear the window
@@ -1352,15 +1282,7 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
 
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
-        
         #Cat Screen
     def selectCatBreed(self):
         #for clearing the previous window
@@ -1493,14 +1415,6 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
     
     
 
@@ -1615,14 +1529,6 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
         
         # Abyssinian Cat Screen
     def selectAbyss(self):
@@ -1740,14 +1646,6 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
         
          # Rag Doll Screen
     def selectRagDoll(self):
@@ -1860,15 +1758,6 @@ class PawfectPortions:
         finally:
         
             self.dropdown_menu.grab_release()
-
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
         
          # Maine Coon Screen
     def selectMaineCoon(self):
@@ -1983,17 +1872,7 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
-    
-   
-        
+       
           # Brithish Shorthair Screen
     def selectBrithishShorthair(self):
         #clear the window
@@ -2104,22 +1983,7 @@ class PawfectPortions:
         finally:
         
             self.dropdown_menu.grab_release()
-
-    def view_profile(self):
-        pass
-
-    def Dogpetprofile(self):
-         self.petprofile_button.config(command=self.dogProfileScreen)
-     
-    def Catpetprofile(self):
-        self.petprofile_button.config(command=self.catProfileScreen)
         
-        
-        
-
-        
-        
-
         
         
         # #config command for the buttons
@@ -2288,6 +2152,14 @@ class PawfectPortions:
                 pdsdb.commit()
                 messagebox.showinfo("Success", "Password Updated")
                 self.loginScreen()
+   
+   
+   
+ 
+   
+   
+   
+   
     #creating a profile page window and displaying the user details that are stored in the database for the signed in user
     def profileScreen(self):
         #clear the window
@@ -2302,31 +2174,37 @@ class PawfectPortions:
         self.userprofile = ImageTk.PhotoImage(self.userprofile)
         self.userprofile_image = Label(self.profile_frame, image=self.userprofile).place(x=0, y=0, relwidth=1, relheight=1)
         
+        # #get the user details from the database and display it in the profile page
+        # cursor = pdsdb.cursor()
+        # select_data = f"SELECT * FROM user_info WHERE email = '{self.username_entry.get()}'"
+        # cursor.execute(select_data)
+        # user = cursor.fetchone()
         
+        # #display the user details in the profile page
+        # self.first_name_label = Label(self.profile_frame, text="First Name:", font=("calibri", 20), bg="black", fg="white")
+        # self.first_name_label.place(x=400, y=100)
         
-        #  #entry user detials as label and update button
-        # mycursor = pdsdb.cursor()
+        # self.first_name = Label(self.profile_frame, text=user[1], font=("calibri", 20), bg="black", fg="white")
+        # self.first_name.place(x=600, y=100)
         
-        # email = self.email_entry.get()
-        # mycursor.execute("SELECT * FROM user_info WHERE email = %s", (email,))
-        # user = mycursor.fetchone()
-
-        # fullname_label = tk.Label(self.profile_frame, text=user[1], font=("Calibri", 15), bg="white")
-        # fullname_label.place(x=180, y=50)
-
-        # lastname_label = tk.Label(self.profile_frame, text=user[2], font=("Calibri", 15), bg="white")
-        # lastname_label.place(x=170, y=110)
-
-        # email_label = tk.Label(self.profile_frame, text=user[0], font=("Calibri", 15), bg="white")
-        # email_label.place(x=120, y=170)
-
-        # phone_label = tk.Label(self.profile_frame, text=user[3], font=("Calibri", 15), bg="white")
-        # phone_label.place(x=120, y=230)
-
-
-  
-        # #update button
-        # self.update_button = Button(self.profile_frame, text="Update", font=("Calibri", 15, "bold"), bg="#b89b3f", fg="white", command=self.update_profile).place(x=100, y=420)
+        # self.last_name_label = Label(self.profile_frame, text="Last Name:", font=("calibri", 20), bg="black", fg="white")
+        # self.last_name_label.place(x=400, y=150)
+        
+        # self.last_name = Label(self.profile_frame, text=user[2], font=("calibri", 20), bg="black", fg="white")
+        # self.last_name.place(x=600, y=150)
+        
+        # self.email_label = Label(self.profile_frame, text="Email:", font=("calibri", 20), bg="black", fg="white")
+        # self.email_label.place(x=400, y=200)
+        
+        # self.email = Label(self.profile_frame, text=user[0], font=("calibri", 20), bg="black", fg="white")
+        # self.email.place(x=600, y=200)
+        
+        # self.mobile_label = Label(self.profile_frame, text="Mobile:", font=("calibri", 20), bg="black", fg="white")
+        # self.mobile_label.place(x=400, y=250)
+        
+        # self.mobile = Label(self.profile_frame, text=user[3], font=("calibri", 20), bg="black", fg="white")
+        # self.mobile.place(x=600, y=250)
+    
         
     
         
@@ -2355,7 +2233,8 @@ class PawfectPortions:
         self.back_button.place(x=580, y=310)
         self.back_button.config(command=self.welcomeScreen)
         
-        
+       #view my pet profile
+
      
     #Dog pet profile page
     def dogProfileScreen(self):
@@ -2455,7 +2334,7 @@ class PawfectPortions:
         #submit button
         self.pet_profile_submit_button = Button(self.pet_profile_frame, text="Submit", font=("calibri", 20), bg="#010101", fg="white", bd=0, cursor="hand2",activebackground="black", activeforeground="white")
         self.pet_profile_submit_button.place(x=650, y=485)
-        self.pet_profile_submit_button.config(command=self.dogpetProfileData)
+        #self.pet_profile_submit_button.config(command=self.dogpetProfileData)
         
     #adding the dog pet profile data to the database
 
@@ -2558,15 +2437,48 @@ class PawfectPortions:
         #submit button
         self.pet_profile_submit_button = Button(self.pet_profile_frame, text="Submit", font=("calibri", 20), bg="#010101", fg="white", bd=0, cursor="hand2",activebackground="black", activeforeground="white")
         self.pet_profile_submit_button.place(x=650, y=485)
-        self.pet_profile_submit_button.config(command=self.dogpetProfileData)
-        
-    
-    
-        
-        #admin page
+        #self.pet_profile_submit_button.config(command=self.catpetProfileData)
         
         
+  
 
+
+    #pet profile screen
+    def view_Profile(self):
+        for i in self.root.winfo_children():
+            i.destroy()
+        self.pet_profile_frame= Frame(self.root,bg="black")
+        self.pet_profile_frame.place(x=0,y=0,width=1200,height=750)
+        
+        self.pet_profile_image = Image.open("images/userprofilebg.jpg")
+        self.pet_profile_image = self.pet_profile_image.resize((1200,750),Image.LANCZOS)
+        self.pet_profile_photo = ImageTk.PhotoImage(self.pet_profile_image)
+        self.pet_profile_frame_image = Label(self.pet_profile_frame,image=self.pet_profile_photo)
+        self.pet_profile_frame_image.place(x=0,y=0,relwidth=1,relheight=1)
+        
+        
+        #title label My Pet Profile
+        self.pet_profile_title = Label(self.pet_profile_frame,text="My Pet Profile",font=("calibri",30),bg="black",fg="white")
+        self.pet_profile_title.place(x=500,y=20)
+        
+        #back button
+        self.back_button = Button(self.pet_profile_frame,text="Back",font=("calibri",18),bg="black",fg="white",bd=0,cursor="hand2")
+        self.back_button.place(x=600,y=400)
+        self.back_button.config(command=self.welcomeScreen)
+
+  
+        
+            
+        
+   
+   
+        
+ 
+    
+    
+        
+    
+    #admin page
     def adminScreen(self):
         #clear the window
         for i in self.root.winfo_children():

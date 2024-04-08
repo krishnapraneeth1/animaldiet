@@ -10,7 +10,7 @@ import re
 import tkinter as tk
 from tkinter import ttk
 import webbrowser
-# from RAG import RAG
+from RAG import RAG
 
 
 #connecting to the database
@@ -24,20 +24,36 @@ pdsdb = mysql.connector.connect(
 #creating table user query userid,first_name,last_name,email,mobile,password
 create_user_table = """
 CREATE TABLE IF NOT EXISTS user_info (  
-    email VARCHAR(100) PRIMARY KEY NOT NULL,
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100)  NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     mobile VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    pet_name VARCHAR(100),
-    pet_breed VARCHAR(100),
-    petcolor VARCHAR(100)
+    password VARCHAR(100) NOT NULL
     )
 """
+
+#pettable
+create_pet_table = """
+CREATE TABLE IF NOT EXISTS pet_info (
+    pet_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    pet_type VARCHAR(100) NOT NULL DEFAULT 'dog',
+    pet_name VARCHAR(100) NOT NULL,
+    pet_breed VARCHAR(100) NOT NULL,
+    pet_gender VARCHAR(100) NOT NULL,
+    pet_color VARCHAR(100) NOT NULL,
+    pet_age INT NOT NULL,
+    image_path VARCHAR(100),
+    FOREIGN KEY (user_id) REFERENCES user_info(user_id))
+"""
+
+
 
 #executing the query
 cursor = pdsdb.cursor()
 cursor.execute(create_user_table)
+cursor.execute(create_pet_table)
 
 
 #class Pawfect Portions as pp
@@ -48,7 +64,9 @@ class PawfectPortions:
         self.root.title("Pawfect Portions")
         self.root.geometry("1200x750")
         self.root.config(bg="white")
-        # self.rag = RAG()
+        self.rag = RAG()
+
+        
         
         
         #self.welcomeScreen()
@@ -491,36 +509,36 @@ class PawfectPortions:
         self.question_entry.place(x=80, y=180, width=1000, height=50)
         
         #ask button
-        # self.ask_button = Button(self.rest_frame, text="Ask", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2",command=self.genetaeResponse)
-        self.ask_button = Button(self.rest_frame, text="Ask", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
+        self.ask_button = Button(self.rest_frame, text="Ask", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2",command=self.generateResponse)
+        # self.ask_button = Button(self.rest_frame, text="Ask", font=("calibri", 18, "bold"), bg="#242323", fg="white", bd=0, cursor="hand2")
         self.ask_button.place(x=550, y=250)
         
         
         #generate response
-    # def genetaeResponse(self):
-    #     #get the question from the entry box
-    #     question = self.question_entry.get()
-    #     #check if the question is empty
-    #     if question == "":
-    #         messagebox.showerror("Error", "Please enter a question")
-    #         return
+    def generateResponse(self):
+        #get the question from the entry box
+        question = self.question_entry.get()
+        #check if the question is empty
+        if question == "":
+            messagebox.showerror("Error", "Please enter a question")
+            return
         
-    #     response = self.rag.query(question)
+        response = self.rag.query(question)
         
-    #     # print(response)
+        # print(response)
         
-    #     #frame for the response
-    #     self.response_frame = Frame(self.rest_frame, bg="black")
-    #     self.response_frame.place(x=80, y=320, width=1000, height=300)
+        #frame for the response
+        self.response_frame = Frame(self.rest_frame, bg="black")
+        self.response_frame.place(x=80, y=320, width=1000, height=300)
         
-    #     #with borders
-    #     self.response_frame.config(highlightbackground="white", highlightcolor="white", highlightthickness=1)
+        #with borders
+        self.response_frame.config(highlightbackground="white", highlightcolor="white", highlightthickness=1)
         
-    #     #response label
-    #     self.response_label = Label(self.response_frame, text=response, font=("calibri", 18), bg="black", fg="white")
-    #     #if text is long, wrap it
-    #     self.response_label.config(wraplength=950)
-    #     self.response_label.place(x=10, y=10)
+        #response label
+        self.response_label = Label(self.response_frame, text=response, font=("calibri", 18), bg="black", fg="white")
+        #if text is long, wrap it
+        self.response_label.config(wraplength=950)
+        self.response_label.place(x=10, y=10)
         
         
         # Bind the petprofile_button to show the dropdown menu on left click
@@ -528,7 +546,7 @@ class PawfectPortions:
 
         # Create the dropdown menu with a different design
         self.dropdown_menu = Menu(self.root, tearoff=0, bg="#242323", fg="white", bd=0, font=("calibri", 20, "bold"))
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self.catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
 
@@ -668,7 +686,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -783,7 +801,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -902,7 +920,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1022,7 +1040,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1034,7 +1052,7 @@ class PawfectPortions:
         
             self.dropdown_menu.grab_release()
 
-    def view_profile(self):
+    def view_Profile(self):
         self.petprofile_button.config(command=self.view_Profile)
 
     def Dogpetprofile(self):
@@ -1155,9 +1173,49 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
+
+        # Dog="Labrador"
+        # dog_details=self.rag.getDogDetails(Dog)
+        
+        
+        #ask question about the labrador label
+        self.labrador_label = Label(self.root, text="Ask Anything about the Labrardor.", font=("calibri", 20,"bold"), bg="#f8f8fa", fg="black")
+        self.labrador_label.place(x=650, y=300)
+        
+        #Entry box for the question
+        self.question_entry = Entry(self.root, font=("calibri", 18), bg="white", fg="black")
+        self.question_entry.place(x=650, y=350, width=400, height=40)
+        
+        #ask button
+        self.ask_button = Button(self.root, text="Ask", font=("calibri", 18, "bold"), bg="#f8f8fa", fg="black", bd=0, cursor="hand2", command=self.askLabrador)
+        self.ask_button.place(x=1050, y=350)
+        
+    def askLabrador(self):
+        dog="Labrador"
+        question=self.question_entry.get()
+        
+        #get the answer from the database
+        answer=self.rag.getAnswer(dog, question)
+        
+        #a frame to display the answer
+        self.answer_frame = Frame(self.root)
+        self.answer_frame.place(x=550, y=400, width=600, height=200)
+
+        #display the answer
+        self.answer_label = Label(self.answer_frame, text=answer, font=("calibri", 18),fg="black")
+        self.answer_label.config(wraplength=450)
+        self.answer_label.place(x=0, y=0)
+
+        
+        #clear the entry box
+        self.question_entry.delete(0, END)
+        
+        
+        
+
     #dropdown menu for the pet profile
     def show_dropdown_menu(self, event):
         """Show the dropdown menu near the button."""
@@ -1270,7 +1328,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1403,7 +1461,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1517,7 +1575,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1634,7 +1692,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1747,7 +1805,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1860,7 +1918,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -1972,7 +2030,7 @@ class PawfectPortions:
 
         # Create the dropdown menu
         self.dropdown_menu = Menu(self.root, tearoff=0)
-        self.dropdown_menu.add_command(label="View My Pet", command=self.view_profile)
+        self.dropdown_menu.add_command(label="View My Pet", command=self.view_Profile)
         self.dropdown_menu.add_command(label="Register Cat", command=self. catProfileScreen)
         self.dropdown_menu.add_command(label="Register Dog", command=self.dogProfileScreen)
     #dropdown menu for the pet profile
@@ -2045,6 +2103,12 @@ class PawfectPortions:
         user = cursor.fetchone()
 
         if user:
+            self.user_id=user[0]
+            self.first_name=user[1]
+            self.last_name=user[2]
+            self.email=user[3]
+            self.mobile=user[4]
+            self.current_password=user[5]
             self.welcomeScreen()
         elif email == "admin" and password == "admin":
             self.adminScreen()
@@ -2174,40 +2238,8 @@ class PawfectPortions:
         self.userprofile = ImageTk.PhotoImage(self.userprofile)
         self.userprofile_image = Label(self.profile_frame, image=self.userprofile).place(x=0, y=0, relwidth=1, relheight=1)
         
-        # #get the user details from the database and display it in the profile page
-        # cursor = pdsdb.cursor()
-        # select_data = f"SELECT * FROM user_info WHERE email = '{self.username_entry.get()}'"
-        # cursor.execute(select_data)
-        # user = cursor.fetchone()
-        
-        # #display the user details in the profile page
-        # self.first_name_label = Label(self.profile_frame, text="First Name:", font=("calibri", 20), bg="black", fg="white")
-        # self.first_name_label.place(x=400, y=100)
-        
-        # self.first_name = Label(self.profile_frame, text=user[1], font=("calibri", 20), bg="black", fg="white")
-        # self.first_name.place(x=600, y=100)
-        
-        # self.last_name_label = Label(self.profile_frame, text="Last Name:", font=("calibri", 20), bg="black", fg="white")
-        # self.last_name_label.place(x=400, y=150)
-        
-        # self.last_name = Label(self.profile_frame, text=user[2], font=("calibri", 20), bg="black", fg="white")
-        # self.last_name.place(x=600, y=150)
-        
-        # self.email_label = Label(self.profile_frame, text="Email:", font=("calibri", 20), bg="black", fg="white")
-        # self.email_label.place(x=400, y=200)
-        
-        # self.email = Label(self.profile_frame, text=user[0], font=("calibri", 20), bg="black", fg="white")
-        # self.email.place(x=600, y=200)
-        
-        # self.mobile_label = Label(self.profile_frame, text="Mobile:", font=("calibri", 20), bg="black", fg="white")
-        # self.mobile_label.place(x=400, y=250)
-        
-        # self.mobile = Label(self.profile_frame, text=user[3], font=("calibri", 20), bg="black", fg="white")
-        # self.mobile.place(x=600, y=250)
+       
     
-        
-    
-        
         #profile label
         self.profile_label = Label(self.profile_frame, text="My Profile", font=("calibri", 30), bg="#010204", fg="white")
         self.profile_label.place(x=550, y=20)
@@ -2227,13 +2259,113 @@ class PawfectPortions:
         #Mobile label
         self.mobile_label = Label(self.profile_frame, text="Mobile:", font=("calibri", 20), bg="#010204", fg="white")
         self.mobile_label.place(x=400, y=250)
+
+        #display data as label
+        self.first_name_label = Label(self.profile_frame, text=self.first_name, font=("calibri", 20), bg="#010204", fg="white")
+        self.first_name_label.place(x=600, y=100)
+
+        self.last_name_label = Label(self.profile_frame, text=self.last_name, font=("calibri", 20), bg="#010204", fg="white")
+        self.last_name_label.place(x=600, y=150)
+
+        self.email_label = Label(self.profile_frame, text=self.email, font=("calibri", 20), bg="#010204", fg="white")
+        self.email_label.place(x=600, y=200)
+
+        self.mobile_label = Label(self.profile_frame, text=self.mobile, font=("calibri", 20), bg="#010204", fg="white")
+        self.mobile_label.place(x=600, y=250)
+
         
         #back button
         self.back_button = Button(self.profile_frame, text="Back", font=("calibri", 18), bg="#010204", fg="white", bd=0, cursor="hand2",activebackground="#010204", activeforeground="white")
         self.back_button.place(x=580, y=310)
         self.back_button.config(command=self.welcomeScreen)
+
+        #update password button
+        self.update_password_button = Button(self.profile_frame, text="Update Password", font=("calibri", 18), bg="#010204", fg="white", bd=0, cursor="hand2",activebackground="#010204", activeforeground="white")
+        self.update_password_button.place(x=750, y=310)
+        self.update_password_button.config(command=self.validatePassword)
         
        #view my pet profile
+        
+    #updatePassword
+    def validatePassword(self):
+        #clear profile_frame
+        for i in self.profile_frame.winfo_children():
+            i.destroy()
+        
+        #Enter your current password
+        self.current_password_label = Label(self.profile_frame, text="Enter Current Password:", font=("calibri", 20), bg="#010204", fg="white")
+        self.current_password_label.place(x=400, y=100)
+
+        self.current_password_entry = Entry(self.profile_frame, font=("calibri", 20), bg="#010204", fg="white", bd=0)
+        self.current_password_entry.place(x=400, y=200)
+
+        #validate the current password
+        self.validate_password_button = Button(self.profile_frame, text="Validate Password", font=("calibri", 18), bg="#010204", fg="white", bd=0, cursor="hand2",activebackground="#010204", activeforeground="white")
+        self.validate_password_button.place(x=400, y=300)
+        self.validate_password_button.config(command=self.updatePassword)
+
+    #update the password
+    def updatePassword(self):
+        #check if password is correct
+        current_password = self.current_password_entry.get()
+
+        if current_password!=self.current_password:
+
+            #passwords donot match
+            messagebox.showerror("Error", "Incorrect Password")
+            return
+        else:
+            #New Password label
+            self.new_password_label = Label(self.profile_frame, text="Enter New Password:", font=("calibri", 20), bg="#010204", fg="white")
+            self.new_password_label.place(x=400, y=100)
+
+            self.new_password_entry = Entry(self.profile_frame, font=("calibri", 20), bg="#010204", fg="white", bd=0)
+            self.new_password_entry.place(x=400, y=200)
+
+            #Confirm Password label
+            self.confirm_password_label = Label(self.profile_frame, text="Confirm Password:", font=("calibri", 20), bg="#010204", fg="white")
+            self.confirm_password_label.place(x=400, y=250)
+
+            self.confirm_password_entry = Entry(self.profile_frame, font=("calibri", 20), bg="#010204", fg="white", bd=0)
+            self.confirm_password_entry.place(x=400, y=350)
+
+            #update password button
+            self.update_password_button = Button(self.profile_frame, text="Update Password", font=("calibri", 18), bg="#010204", fg="white", bd=0, cursor="hand2",activebackground="#010204", activeforeground="white")
+            self.update_password_button.place(x=400, y=450)
+
+            self.update_password_button.config(command=self.updatePassword_db)
+
+            #cancel button
+            self.cancel_button = Button(self.profile_frame, text="Cancel", font=("calibri", 18), bg="#010204", fg="white", bd=0, cursor="hand2",activebackground="#010204", activeforeground="white")
+            self.cancel_button.place(x=600, y=450)
+
+            self.cancel_button.config(command=self.profileScreen)
+
+    #updatePassword_db
+    def updatePassword_db(self):
+        #get the new password
+        new_password = self.new_password_entry.get()
+        confirm_password = self.confirm_password_entry.get()
+
+        #password validation
+        if len(new_password) < 8 or not re.search("[a-z]", new_password) or not re.search("[A-Z]", new_password) or not re.search("[0-9]", new_password):
+            messagebox.showerror("Error", "Password must contain at least 8 characters, including letters and numbers")
+            return
+        #check if the password and confirm password are the same
+        if new_password != confirm_password:
+            messagebox.showerror("Error", "Password and Confirm Password should be the same")
+            return
+        else:
+            #update the password
+            cursor = pdsdb.cursor()
+            update_data = f"UPDATE user_info SET password = '{new_password}' WHERE email = '{self.email}'"
+            cursor.execute(update_data)
+            pdsdb.commit()
+            messagebox.showinfo("Success", "Password Updated")
+            self.loginScreen()
+
+
+
 
      
     #Dog pet profile page
@@ -2334,11 +2466,34 @@ class PawfectPortions:
         #submit button
         self.pet_profile_submit_button = Button(self.pet_profile_frame, text="Submit", font=("calibri", 20), bg="#010101", fg="white", bd=0, cursor="hand2",activebackground="black", activeforeground="white")
         self.pet_profile_submit_button.place(x=650, y=485)
-        #self.pet_profile_submit_button.config(command=self.dogpetProfileData)
+        self.pet_profile_submit_button.config(command=self.dogpetProfileData)
         
     #adding the dog pet profile data to the database
 
-    #Cat pet screen
+    #dogpetProfileData
+    def dogpetProfileData(self):
+        #take data
+        pet_name = self.pet_name_entry.get()
+        pet_breed = self.pet_breed.get()
+        pet_gender = self.gender.get()
+        years = self.years.get()
+        months = self.months.get()
+        pet_age = int(years)*12 + int(months)
+        pet_color = self.pet_color_entry.get()
+  
+        #check if the data is empty
+        if pet_name == "" or pet_breed == "Select Breed" or pet_gender == " " or pet_age == " " or pet_color == "":
+            messagebox.showerror("Error", "All fields are required")
+            return
+        #insert the data to the database
+        cursor = pdsdb.cursor()
+        insert_data = f"INSERT INTO pet_info (user_id, pet_type, pet_name,pet_breed, pet_gender, pet_color, pet_age) VALUES ({self.user_id}, 'Dog', '{pet_name}', '{pet_breed}', '{pet_gender}', '{pet_color}', '{pet_age}')"
+        cursor.execute(insert_data)
+        pdsdb.commit()
+        messagebox.showinfo("Success", "Pet Profile Created")
+        self.welcomeScreen()
+
+
     
     def catProfileScreen(self):
         #clear the window
@@ -2460,6 +2615,18 @@ class PawfectPortions:
         #title label My Pet Profile
         self.pet_profile_title = Label(self.pet_profile_frame,text="My Pet Profile",font=("calibri",30),bg="black",fg="white")
         self.pet_profile_title.place(x=500,y=20)
+
+        #get data from pets table with user id
+        cursor = pdsdb.cursor()
+        select_data = f"SELECT * FROM pet_info WHERE user_id = {self.user_id}"
+        cursor.execute(select_data)
+        pets = cursor.fetchall()
+        print(pets)
+
+        # #iterate through the pets and display the data
+        # for i, pet in enumerate(pets):
+            
+
         
         #back button
         self.back_button = Button(self.pet_profile_frame,text="Back",font=("calibri",18),bg="black",fg="white",bd=0,cursor="hand2")

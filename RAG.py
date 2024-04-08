@@ -10,7 +10,7 @@ import os, streamlit as st
 #Class RAG take query and return response
 class RAG:
     def __init__(self):
-        os.environ['OPENAI_API_KEY']=
+        os.environ['OPENAI_API_KEY']='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'
         self.api_key=os.environ['OPENAI_API_KEY']
         self.documents = SimpleDirectoryReader("petData").load_data()
         self.llm = OpenAI(openai_api_key=self.api_key,model="gpt-3.5-turbo", temperature=0, max_tokens=256)
@@ -25,4 +25,31 @@ class RAG:
             return self.response
         except Exception as e:
             return f"An error occurred: {e}"
+        
+
+    #get dogDetails
+    def getDogDetails(self, dogName):
+        try:
+            self.response = self.query_engine.query(f" tell me about the dog, {dogName}")
+            return self.response
+        except Exception as e:
+            return f"An error occurred: {e}"
+        
+    #get catDetails
+    def getCatDetails(self, catName):
+        try:
+            self.response = self.query_engine.query(f" tell me about the cat, {catName}")
+            return self.response
+        except Exception as e:
+            return f"An error occurred: {e}"
+        
+    #get answer
+    def getAnswer(self,pet, question):
+        try:
+            self.response = self.query_engine.query("for pet"+str(pet)+question)
+            return self.response
+        except Exception as e:
+            return f"An error occurred: {e}"
+        
+
         
